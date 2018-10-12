@@ -1,0 +1,7 @@
+1/Extrait une liste de 0 et 1 de la matrice/liste
+
+2/Trouve le threshold de l'espacement
+
+3/Determine une liste de 0 et 1 avec 1 = un truc a save et 0 = supprimer
+
+4/Extrait les images

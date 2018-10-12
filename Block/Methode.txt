@@ -1,0 +1,16 @@
+dPage Analysis
+
+Line Segmentation
+	Decoupage Horizontal
+		Variable espacement des lignes
+	Retourne les images des differents mots individuellement
+Word Segmentation
+	Decoupage Vertical en petites images
+		Variable d'espacement des mots
+			Creer une liste de pixel (noir ou blanc) (convertir la matrice : des au'il y a un pixel noir sur la colonne --> pixel noir)
+			Mesurer l'espacement pour identifier la variable threshold	
+		Si espacement entre 2 ligne ou il y a au moins 1 pixel noir > variable espacement
+			--> nouveau mot (extraire le mot avant le blanc et ignorer l'espace
+	Retourne les images des differents mots individuellement
+Character Segmentation
+	Meme methode mais des qu'il y a un pixel blanc dans la liste --> nouveau caractere
