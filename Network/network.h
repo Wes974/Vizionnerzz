@@ -8,6 +8,15 @@
 
 typedef struct Network Network;
 struct Network {
+    
+    int NumInput;   // Number of input neurons
+    int NumHidden;  // Number of hidden neurons
+    int NumOutput;  // Number of output neurons
+    // NumOutput = number of chars ?
+    
+    
+    
+
 
 };
 
