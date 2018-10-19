@@ -1,11 +1,15 @@
+#include "Basics.h"
 #include "for_show.h"
 #include "greyscale_otsu.h"
 
 int main()
 {
-    SDL_Surface image = load_image("image.bmp");
-    unsigned char array[image->h][image->w];
+    SDL_Surface* image = load_image("image.bmp");
+    
+    int i = image->h;
+    int j = image->w;
+    unsigned char array[i + j];
 
-    grayscale(image, array);
-    Make_A_File(Matrix_2_Surface(array), "grayscaled.bmp");
+    grayscale(image, *array, i, j);
+    Make_A_File(Matrix_2_Surface(array, i, j), "grayscaled.bmp");
 }

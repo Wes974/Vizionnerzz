@@ -10,7 +10,7 @@ void array_init(int array[])
         array[i] = 0;
 }
 
-void grayscale(SDL_Surface *surf, unsigned char *array[], , int rows, int col);
+void grayscale(SDL_Surface *surf, unsigned char *array[] , int rows, int col);
 unsigned char otsu_treshold(unsigned char array[], int rows, int col);
 void otsu(unsigned char image[], unsigned char *b_image[], int rows, int col);
 

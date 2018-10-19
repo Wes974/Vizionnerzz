@@ -11,9 +11,7 @@ all: tests
 
 tests: tests.o
 
-tests.o: for_show.h greyscale_otsu.h
-
-greyscale_otsu.h: Basics.h
+tests.o: for_show.h greyscale_otsu.h Basics.h
 
 clean:
 	${RM} *.o
