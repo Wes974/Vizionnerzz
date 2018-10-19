@@ -34,6 +34,6 @@ struct Network createXOR();
 
 double sigmoid();
 
-void fillNeurons(Malo arr[]; int count);
+void fillNeurons(Malo arr[], int count);
 
 #endif
