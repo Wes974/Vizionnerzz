@@ -1,14 +1,14 @@
 #include "for_show.h"
 
-SDL_Surface* Matrix_2_Surface(int array[][])
+SDL_Surface* Matrix_2_Surface(int array[], int rows, int col)
 {
     SDL_Surface* image_surface;
 
-    image_surface = SDL_CreateRGBSurface(0, sizeof(array[0]), sizeof(array), 32, 0, 0, 0, 0);
+    image_surface = SDL_CreateRGBSurface(0, rows, col, 32, 0, 0, 0, 0);
     
-    for(size_t i = 0; i < sizeof(array); i++)
+    for(size_t i = 0; i < col; i++)
     {
-        for(size_t j = 0; j < sizeof(array[0]); i++)
+        for(size_t j = 0; j < rows; i++)
         {       
             Uint32 newPixel = SDL_MapRGB(image_surface->format, array[i][j], array[i][j], array[i][j]);
             put_pixel(image_surface, j, i, newPixel);

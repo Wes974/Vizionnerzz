@@ -1,5 +1,5 @@
 #include "for_show.h"
-#include "grayscale_otsu"
+#include "greyscale_otsu.h"
 
 int main()
 {

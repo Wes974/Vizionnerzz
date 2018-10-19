@@ -1,28 +1,28 @@
 #include "greyscale_otsu.h"
 
-void grayscale(SDL_Surface *surf, unsigned char *array[][])
+void grayscale(SDL_Surface *surf, unsigned char *array[], int rows, int col)
 {
-    for(size_t i = 0; i < sizeof(array); i++)
+    for(size_t i = 0; i < col; i++)
     {
-        for(size_t j = 0; j < sizeof(array[0]); i++)
+        for(size_t j = 0; j < rows; i++)
         {
             Uint32 pixel = get_pixel(image_surface, x, y);
             Uint8 r, g, b;
             SDL_GetRGB(pixel, image_surface->format, &r, &g, &b);
-            array[i][j] = 0.3 * r + 0.59 * g + 0.11 * b;
+            array[i + j] = 0.3 * r + 0.59 * g + 0.11 * b;
         }
     }
 }
 
-unsigned char otsu_treshold(unsigned char array[][])
+unsigned char otsu_treshold(unsigned char array[][], int rows, int col)
 {
     int histo[256];
     array_init(histo);
-    for(size_t i = 0; i < sizeof(array); i++)
+    for(size_t i = 0; i < col; i++)
     {
-        for(size_t j = 0; j < sizeof(array[0]); i++)
+        for(size_t j = 0; j < rows; i++)
         {
-            size_t index = (size_t)array[i][j];
+            size_t index = (size_t)array[i + j];
             histo[index]++;
         }
     }
@@ -37,18 +37,18 @@ unsigned char otsu_treshold(unsigned char array[][])
 
 }
 
-void otsu(unsigned char image[][], unsigned char *b_image[][])
+void otsu(unsigned char image[], unsigned char *b_image[], int rows, int col)
 {
     unsigned char treshold = otsu_treshold(image);
     
-    for(size_t i = 0; i < sizeof(image); i++)
+    for(size_t i = 0; i < col; i++)
     {
-        for(size_t j = 0; j < sizeof(image[0]); i++)
+        for(size_t j = 0; j < rows; i++)
         {
-            if(image[i][j] >= treshold)
-                b_image[i][j] = 255;
+            if(image[i + j] >= treshold)
+                b_image[i + j] = 255;
             else
-                b_image[i][j] = 0;
+                b_image[i + j] = 0;
         }
     }
 }

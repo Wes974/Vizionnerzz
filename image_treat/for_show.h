@@ -3,7 +3,7 @@
 
 #include "Basics.h"
 
-SDL_Surface* Matrix_2_Surface(int array[][]);
-void Make_A_File(SDL_Surface *surf);
+SDL_Surface* Matrix_2_Surface(int array[], int rows, int col);
+void Make_A_File(SDL_Surface *surf, const char* file);
 
 #endif
