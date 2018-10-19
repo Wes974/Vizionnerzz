@@ -22,6 +22,7 @@ struct Network {
     int NumOutput;  // Number of output neurons
     // NumOutput = number of chars ?
 
+
     Malo input[];
     Malo output[];
     Malo hidden[];
