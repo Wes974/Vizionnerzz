@@ -22,24 +22,25 @@ int main(){
 struct Network createXOR() {
 
     Network xor;
-    n.NumInput = 2;
-    n.NumHidden = 2;
-    n.NumOutput = 1;
+    xor.NumInput = 2;
+    xor.NumHidden = 2;
+    xor.NumOutput = 1;
     
     
-
 }
 
 double sigmoid(double z) {
     return 1.0 / (1.0 + exp(- z));
 }
 
-void fillNeurons(Malo arr[]; int count) {
+void fillNeurons(Malo arr[], size_t count) {
 
     srand(time(NULL));
-    for (int i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         Malo neur;
-        neur.bias = (float)rand()/(float)(RAND_MAX/5) 
+        neur.bias = (float)rand()/(float)(RAND_MAX/5);
+        neur.weight = (float)rand()/(float)(RAND_MAX/5);
+        arr[i] = neur;
     }
 
 }

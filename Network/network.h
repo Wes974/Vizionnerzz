@@ -17,9 +17,9 @@ struct Malo {
 typedef struct Network Network;
 struct Network {
     
-    int NumInput;   // Number of input neurons
-    int NumHidden;  // Number of hidden neurons
-    int NumOutput;  // Number of output neurons
+    size_t NumInput;   // Number of input neurons
+    size_t NumHidden;  // Number of hidden neurons
+    size_t NumOutput;  // Number of output neurons
     // NumOutput = number of chars ?
 
 
@@ -34,6 +34,6 @@ struct Network createXOR();
 
 double sigmoid();
 
-void fillNeurons(Malo arr[]; int count);
+void fillNeurons(Malo arr[], size_t count);
 
 #endif
