@@ -26,6 +26,13 @@ struct Network createXOR() {
     xor.NumHidden = 2;
     xor.NumOutput = 1;
     
+    xor.input[xor.NumInput];
+    xor.hidden[xor.NumHidden];
+    xor.output[xor.NumOutput];
+
+    fillNeurons(xor.input, xor.NumInput);
+    fillNeurons(xor.hidden, xor.NumHidden);
+    fillNeurons(xor.output, xor.NumOutput);
     
 }
 
