@@ -14,3 +14,13 @@ int main(){
 
 
 }
+
+
+* CreateXOR() {
+
+    Network xor;
+    n.NumInput = 2;
+    n.NumHidden = 2;
+    n.NumOutput = 1;
+
+}
