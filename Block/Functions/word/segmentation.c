@@ -1,13 +1,11 @@
-unsigned int *  matrixToList(unsigned int matrix[3][3]) {             //Convert a 2 dimensional matrix into a 1 dimensional List.
-    size_t lineLength = sizeof(matrix)/sizeof(matrix[0][0]);        //Width of Image
-    size_t columnLength = sizeof(matrix[0])/sizeof(matrix[0][0]);   //Heigth of Image
+unsigned int * matrixToList(unsigned int matrix[], unsigned int height, unsigned int width) {             //Convert a 2 dimensional matrix into a 1 dimensional List.
     unsigned int list[lineLength];
     int i = 0;
-    while (i < lineLength){
+    while (i < width){
         int j = 0;
         int value = 0;
-        while (j < columnLength){
-            if(matrix[i][j] == 1){                                  //If the column contain at least 1 black pixel, the corresponding position in the list is black.
+        while (j < height){
+            if(matrix[i*j] == 1){                                  //If the column contain at least 1 black pixel, the corresponding position in the list is black.
                 value = 1;
             }
             j = j + 1;
@@ -37,7 +35,7 @@ unsigned int thresholdDefine(unsigned int list[]){                  //Find the t
                                                                     //average space size.
 }
 
-unsigned int ** whatToSave(unsigned int threshold, unsigned int list[], unsigned int matrix[][]){    //find the positions between the begining and the end of a 
+unsigned int ** whatToSave(unsigned int threshold, unsigned int list[], unsigned int matrix[], unsigned int height, unsigned int width){    //find the positions between the begining and the end of a 
                                                                                                     //word and call the cut function to return the list containing
                                                                                                     //all the word.
     unsigned int pos1 = 0;
@@ -64,12 +62,12 @@ unsigned int ** whatToSave(unsigned int threshold, unsigned int list[], unsigned
     return words;
 }
 
-unsigned int * cutWords(unsigned int pos1, unsigned int pos2, unsigned int matrix[][]){             //use the position of the begining and the ned of a word and
+unsigned int * cutWords(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsigned int height, unsigned int width){             //use the position of the begining and the ned of a word and
                                                                                                     //return the word (a matrix)
-    unsigned int word[sizeof(matrix[][]/sizeofmatrix[0][0])][pos2 - pos1];
+    unsigned int word[j*(pos2 - pos1)];
     for(int i = pos1;i < pos2;i++){
         for(int j = 0; j < sizeof(list)/sizeof(list[0]); j++){
-            word[i][j] = matrix[i][j]
+            word[i*j] = matrix[i*j]
         }
     }
     return word;
