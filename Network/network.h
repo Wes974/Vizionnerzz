@@ -15,7 +15,6 @@ struct Network {
     // NumOutput = number of chars ?
     
     
-    
 
 
 };
