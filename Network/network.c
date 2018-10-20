@@ -16,7 +16,7 @@ int main(){
 }
 
 
-struct Network createXOR() {
+Network createXOR() {
 
     /*Malo in[2];
     Malo hidden[2];
@@ -26,7 +26,7 @@ struct Network createXOR() {
     fillNeurons(hidden, 2);
     fillNeurons(out, 1);*/
 
-    struct Network xor = {2, 2, 1,fillNeurons(2), fillNeurons(2), fillNeurons(1)};
+    Network notAXor = {2, 2, 1,fillNeurons(2), fillNeurons(2), fillNeurons(1)};
     /*xor.NumInput = 2;
     xor.NumHidden = 2;
     xor.NumOutput = 1;
@@ -38,25 +38,28 @@ struct Network createXOR() {
     fillNeurons(xor.input, xor.NumInput);
     fillNeurons(xor.hidden, xor.NumHidden);
     fillNeurons(xor.output, xor.NumOutput);*/
-    return xor;
+    return notAXor;
 }
+
 
 double sigmoid(double z) {
     return 1.0 / (1.0 + exp(- z));
 }
 
-void * fillNeurons(size_t count) {
+Malo * fillNeurons(size_t count) {
 
     srand(time(NULL));
     Malo *arr[count];
     printf("size: %lu\n", sizeof(arr)/sizeof(Malo));
+    
     for (size_t i = 0; i < count; i++) {
         printf("%lu/%lu ", i, count);
         Malo neur;
         neur.bias = (float)rand()/(float)(RAND_MAX/5);
         neur.weight = (float)rand()/(float)(RAND_MAX/5);
         printf("bias: %f weight: %f\n", neur.bias, neur.weight);
-        *arr[i] = neur;
+        arr[i] = &neur;
     }
-    return arr;
+    
+    return *arr;
 }

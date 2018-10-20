@@ -25,17 +25,19 @@ struct Network {
     // NumOutput = number of chars ?
 
 
-    int *input;
-    int *hidden;
-    int *output;
+    struct Malo *input;
+    struct Malo *hidden;
+    struct Malo *output;
 
 };
 
 
-struct Network createXOR();
+//struct Network createXOR();
+
+Network createXOR();
 
 double sigmoid();
 
-void * fillNeurons(size_t count);
+Malo * fillNeurons(size_t count);
 
 #endif
