@@ -5,12 +5,14 @@
 
 # ifndef NETWORK_H
 # define NETWORK_H
+#include <stddef.h>
+
 
 typedef struct Malo Malo;
 struct Malo {
 
-    float *bias;
-    float *weight;
+    float bias;
+    float weight;
 
 };
 
@@ -23,9 +25,9 @@ struct Network {
     // NumOutput = number of chars ?
 
 
-    Malo input[];
-    Malo output[];
-    Malo hidden[];
+    int *input;
+    int *hidden;
+    int *output;
 
 };
 
@@ -34,6 +36,6 @@ struct Network createXOR();
 
 double sigmoid();
 
-void fillNeurons(Malo arr[], size_t count);
+void * fillNeurons(size_t count);
 
 #endif
