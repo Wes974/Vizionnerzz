@@ -23,9 +23,9 @@ struct Network {
     size_t NumHidden;  // Number of hidden neurons
     size_t NumOutput;  // Number of output neurons
 
-    struct Malo *input;
-    struct Malo *hidden;
-    struct Malo *output;
+    Malo *input;
+    Malo *hidden;
+    Malo *output;
 
 };
 
