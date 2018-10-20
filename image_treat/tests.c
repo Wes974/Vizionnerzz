@@ -6,7 +6,7 @@
 int main()
 {
     SDL_Surface* image;
-    image = load_image("image2.bmp");
+    image = load_image("image1.bmp");
     
     int i = image->h;
     int j = image->w;

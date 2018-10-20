@@ -22,29 +22,57 @@ void grayscale(SDL_Surface *surf, Uint8 array[], size_t rows, size_t col)
 
 //Create the otsu Histogram
 
-Uint8 * create_Histo(Uint8 image, size_t rows, size_t col)
+void create_Histo(Uint8 *image, size_t rows, size_t col, unsigned long *histo)
 {
-    Uint8 histo[256];
     array_init(histo);
     for(size_t i = 0; i < rows; i++)
     {
         for(size_t j = 0; j < col; j++)
         {
-            size_t index = array[i * col + j];
+            size_t index = image[i * col + j];
             histo[index] = histo[index] + 1;
         }
     }
-    
-    return histo;
 }
 
 //Find the treshold of otsu by constructing a histogram
 
 unsigned char otsu_treshold(Uint8 array[], size_t rows, size_t col)
 {
-    Uint8 *histo;
-    histo = create_Histo(array, rows, col);
+    unsigned long *histo =calloc(256, sizeof(unsigned long));
+    create_Histo(array, rows, col, histo);
+    Uint8 treshold = 0;
+    float var_max = 0, prov_tresh = 0;
+    unsigned long sum = 0, sumB = 0;
+    unsigned long q1 = 0, q2 = 0, m1 = 0, m2 = 0;
+    unsigned long N = rows * col;
 
+    for(int i = 0; i < 256; i++)
+        sum += i  * histo[i];
+
+    for(int j = 0; j < 256; j++)
+    {
+        q1 += histo[j];
+        if(q1 == 0)
+            continue;
+        q2 = N - q1;
+        if(q2 == 0)
+            break;
+
+        sumB += j * histo[j];
+        m1 = sumB / q1;
+        m2 = (sum - sumB) / q2;
+
+        prov_tresh = q1 * q2 * (m1 - m2) * (m1 - m2);
+
+        if(prov_tresh > var_max)
+        {
+            treshold = j;
+            var_max = prov_tresh;
+        }
+    }
+
+    return treshold;
 }
 
 //Return a binarized matrix from a greyscaled matrix
