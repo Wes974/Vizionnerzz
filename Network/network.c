@@ -11,8 +11,8 @@
 
 int main(){
 
- //   printf("hiddenMalo[0].bias = %f\n", ((Malo)createXOR().hidden[0]).bias);
-    createXOR();
+    Network n = createXOR();
+
 }
 
 
@@ -41,17 +41,11 @@ Malo * fillNeurons(size_t count) {
     srand(time(NULL));
     Malo *arr[count];
     
-    printf("size: %lu\n", sizeof(arr) / sizeof(Malo));
-    
     for (size_t i = 0; i < count; i++) {
-        
-        printf("%lu/%lu ", i, count);
         
         Malo neur;
         neur.bias = (float)rand() / (float)(RAND_MAX / 5);
         neur.weight = (float)rand() / (float)(RAND_MAX / 5);
-        
-        printf("bias: %f weight: %f\n", neur.bias, neur.weight);
         
         arr[i] = &neur;
     }
