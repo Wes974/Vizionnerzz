@@ -36,6 +36,6 @@ struct Network createXOR();
 
 double sigmoid();
 
-void * fillNeurons(size_t count);
+int * fillNeurons(size_t count);
 
 #endif

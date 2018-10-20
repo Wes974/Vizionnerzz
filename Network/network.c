@@ -26,7 +26,7 @@ struct Network createXOR() {
     fillNeurons(hidden, 2);
     fillNeurons(out, 1);*/
 
-    struct Network xor = {2, 2, 1,fillNeurons(2), fillNeurons(2), fillNeurons(1)};
+    struct Network notAXor = {2, 2, 1,fillNeurons(2), fillNeurons(2), fillNeurons(1)};
     /*xor.NumInput = 2;
     xor.NumHidden = 2;
     xor.NumOutput = 1;
@@ -38,25 +38,26 @@ struct Network createXOR() {
     fillNeurons(xor.input, xor.NumInput);
     fillNeurons(xor.hidden, xor.NumHidden);
     fillNeurons(xor.output, xor.NumOutput);*/
-    return xor;
+    return notAXor;
 }
 
 double sigmoid(double z) {
     return 1.0 / (1.0 + exp(- z));
 }
 
-void * fillNeurons(size_t count) {
+int * fillNeurons(size_t count) {
 
     srand(time(NULL));
     Malo *arr[count];
-    printf("size: %lu\n", sizeof(arr)/sizeof(Malo));
+    printf("size: %lu (%lu items)\n", sizeof(arr), sizeof(arr)/sizeof(Malo));
     for (size_t i = 0; i < count; i++) {
         printf("%lu/%lu ", i, count);
         Malo neur;
         neur.bias = (float)rand()/(float)(RAND_MAX/5);
         neur.weight = (float)rand()/(float)(RAND_MAX/5);
-        printf("bias: %f weight: %f\n", neur.bias, neur.weight);
+        printf("bias: %f weight: %f size: %lu\n", neur.bias, neur.weight, sizeof(neur));
         *arr[i] = neur;
+        printf("done, %f\n", arr[0]->bias);
     }
     return arr;
 }
