@@ -18,26 +18,16 @@ int main(){
 
 Network createXOR() {
 
-    /*Malo in[2];
-    Malo hidden[2];
-    Malo out[1];
-
-    fillNeurons(in, 2);
-    fillNeurons(hidden, 2);
-    fillNeurons(out, 1);*/
-
-    Network notAXor = {2, 2, 1,fillNeurons(2), fillNeurons(2), fillNeurons(1)};
-    /*xor.NumInput = 2;
-    xor.NumHidden = 2;
-    xor.NumOutput = 1;
+    Network notAXor;
     
-    xor.input[xor.NumInput];
-    xor.hidden[xor.NumHidden];
-    xor.output[xor.NumOutput];
+    notAXor.NumInput    = 2;
+    notAXor.NumHidden   = 2;
+    notAXor.NumOutput   = 1;
 
-    fillNeurons(xor.input, xor.NumInput);
-    fillNeurons(xor.hidden, xor.NumHidden);
-    fillNeurons(xor.output, xor.NumOutput);*/
+    notAXor.input   = fillNeurons(2);
+    notAXor.hidden  = fillNeurons(2);
+    notAXor.output  = fillNeurons(1);
+
     return notAXor;
 }
 
@@ -50,14 +40,19 @@ Malo * fillNeurons(size_t count) {
 
     srand(time(NULL));
     Malo *arr[count];
-    printf("size: %lu\n", sizeof(arr)/sizeof(Malo));
+    
+    printf("size: %lu\n", sizeof(arr) / sizeof(Malo));
     
     for (size_t i = 0; i < count; i++) {
+        
         printf("%lu/%lu ", i, count);
+        
         Malo neur;
-        neur.bias = (float)rand()/(float)(RAND_MAX/5);
-        neur.weight = (float)rand()/(float)(RAND_MAX/5);
+        neur.bias = (float)rand() / (float)(RAND_MAX / 5);
+        neur.weight = (float)rand() / (float)(RAND_MAX / 5);
+        
         printf("bias: %f weight: %f\n", neur.bias, neur.weight);
+        
         arr[i] = &neur;
     }
     

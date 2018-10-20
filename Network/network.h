@@ -22,17 +22,12 @@ struct Network {
     size_t NumInput;   // Number of input neurons
     size_t NumHidden;  // Number of hidden neurons
     size_t NumOutput;  // Number of output neurons
-    // NumOutput = number of chars ?
-
 
     struct Malo *input;
     struct Malo *hidden;
     struct Malo *output;
 
 };
-
-
-//struct Network createXOR();
 
 Network createXOR();
 
