@@ -17,8 +17,9 @@ for_show.o: for_show.h
 Basics.o: Basics.h
 
 clean:
-	${RM} *.o
+    ${RM} *.o
 	${RM} *.d
 	${RM} tests
+
 
 # END
