@@ -31,7 +31,7 @@ int main(){
     
     double weights[8] = {1, 1, 1, 1, 1, 1, 1, 1};
     
-    for (size_t i = 3; i < 8; i++) {
+    for (size_t i = 2; i < 8; i++) {
    
         double r = (double)rand() / (double)(RAND_MAX / 5); 
         printf("random[%lu] = %f\n", i, r);
@@ -72,6 +72,15 @@ int main(){
 
     }
 
+    printf("sizeof bias    %lu\n", sizeof(net.bias));
+    printf("sizeof bias[0] %lu\n", sizeof(net.bias[0]));
+
+    for (size_t i = 0; i < 5; i++) {
+    
+        printf("bias[%lu] = %f\n", i, net.bias[i]);
+
+    }
+
     size_t testIndex = 0;
     size_t testMaxCount = sizeof(expectedResults) / sizeof(expectedResults[0]);
     double newWeights[8];
@@ -97,12 +106,12 @@ int main(){
     
     // 1 - Calcul de l'erreur sortie
     
-    double outputError = (expectedResults[testIndex] - net.computed[4]) * net.computed[4] * (1 - net.computed[4]);
-    printf("output error = %f\n", outputError);
+//    double outputError = (expectedResults[testIndex] - net.computed[4]) * net.computed[4] * (1 - net.computed[4]);
+//    printf("output error = %f\n", outputError);
 
     // 2 - Poids sortie
     
-    newWeights[7]
+//    newWeights[7]
 
     // 3 - Calcul de l'erreur couche cachee
     
