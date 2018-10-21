@@ -47,7 +47,7 @@ int main(){
     double count_weight[] = {1, 2, 2};
     net.count_weight = count_weight;
 
-    double bias[5] = {0, 0, 0, 0, 0};
+    double bias[2] = {0, 0};
     net.bias = bias;
 
 
@@ -94,11 +94,40 @@ int main(){
     /********* PROPAGATION **********/
     /********************************/
 
-    for (size_t i = 2; i < 8; i++) {
-    
-        
+    printf("\nBegin forward propagation\n");
 
-    }
+    // Hidden Layer
+    double netH1 = 0.0, netH2 = 0.0;
+    
+    // H1 Processing
+    netH1 = weights[0] * net.computed[0] + weights[2] * net.computed[1] + bias[0] * 1;
+    printf("netH1 = %f\n", netH1);
+    // H2 Processing
+    netH2 = weights[1] * net.computed[0] + weights[3] * net.computed[1] + bias[0] * 1;
+    printf("netH2 = %f\n", netH2);
+
+    // SIGMOIDIFICATION
+    double activatedH1 = sigmoid(netH1), activatedH2 = sigmoid(netH2);
+
+    net.computed[2] = activatedH1;
+    net.computed[3] = activatedH2;
+
+    printf("activatedH1 = %f\n", activatedH1);
+    printf("activatedH2 = %f\n", activatedH2);
+
+    // Output Layer
+    double outH1 = 0.0;
+
+    // Out Processing
+    outH1 = weights[4] * activatedH1 + weights[5] * activatedH2 + bias[1] * 1;
+    printf("outH1 = %f\n", outH1);
+
+    // SIGMOIDIFICATION
+    double activatedOut = sigmoid(outH1);
+    
+    printf("activatedOut = %f\n", activatedOut);
+
+    net.computed[4] = activatedOut;
 
     /********************************/
     /******* BACKPROPAGATION ********/
