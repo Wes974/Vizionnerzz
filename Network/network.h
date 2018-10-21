@@ -11,12 +11,12 @@
 typedef struct Network Network;
 struct Network {
 
-    double *computed;       // Tableau des valeurs calculées
-    double *weights;        // Tableau des poids
-    double *bias;           // Tableau des bias
-    double *count_nr;       // Tableau des nombres de neuronnes par couches
-    double *count_weight;   // Tableau des nombres de weights par neuronnes
-    
+    double *computed;       // Computed values array
+    double *weights;        // Weights array
+    double *bias;           // Biases array
+    double *count_nr;       // Neuron count by layer array
+    double *count_weight;   // Weights count by neuron by layer array
+ 
 };
 
 void forwardPropagation(Network net, unsigned int propPrint);
