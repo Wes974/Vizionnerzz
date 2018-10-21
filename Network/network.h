@@ -22,5 +22,5 @@ struct Network {
 };
 
 double sigmoid(double z);
-
+void printArr(double arr[], size_t count);
 #endif

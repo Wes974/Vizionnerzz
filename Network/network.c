@@ -17,7 +17,7 @@ int main(){
     
     int trainingSet[] = {0, 0, 0, 1, 1, 0, 1, 1};
     double expectedResults[] = {0, 1, 1, 0};
-    double trainingStep = 0.1;
+    double trainingStep = 1;
 
     /********************************/
     /********* NETWORK INIT *********/
@@ -31,7 +31,7 @@ int main(){
     
     double weights[8] = {1, 1, 1, 1, 1, 1, 1, 1};
     
-    for (size_t i = 3; i < 8; i++) {
+    for (size_t i = 2; i < 8; i++) {
    
         double r = (double)rand() / (double)(RAND_MAX / 5); 
         printf("random[%lu] = %f\n", i, r);
@@ -72,9 +72,11 @@ int main(){
 
     }
 
-    size_t testIndex = 0;
-    size_t testMaxCount = sizeof(expectedResults) / sizeof(expecteResults[0]);
-    double newWeights[] = calloc(8, sizeof(double));
+    size_t testIndex = 1;
+    size_t testMaxCount = sizeof(expectedResults) / sizeof(expectedResults[0]);
+    double newWeights[8];
+    for (size_t i = 0; i < 8; i++)
+        newWeights[i] = 0;
     // Weights: [ in0.0,  in1.0, hid0.0, hid0.1, hid1.0, hid1.1, out0.0, out0.1]
     //          [ neur0,  neur1,  neur2,  neur2,  neur3,  neur3,  neur4,  neur4]
     //          [    w0,     w1,     w2,     w3,     w4,     w5,     w6,     w7]
@@ -96,13 +98,30 @@ int main(){
     printf("output error = %f\n", outputError);
 
     // 2 - Poids sortie
-    
-    newWeights[7]
+    double w3 = trainingStep * outputError * net.computed[3];
+    double w2 = trainingStep * outputError * net.computed[2];
+    newWeights[7] += w3;
+    newWeights[6] += w2;
 
     // 3 - Calcul de l'erreur couche cachee
     
+    double hidden3Error = (net.computed[3] * (1 - net.computed[3])) * (outputError * w3);
+    double hidden2Error = (net.computed[2] * (1 - net.computed[2])) * (outputError * w2);
+
+    printf("hidden errors = %f, %f\n", hidden3Error, hidden2Error);
+
     // 4 - Poids caches
     
+    newWeights[5] += trainingStep * hidden3Error * net.computed[1];
+    newWeights[3] += trainingStep * hidden3Error * net.computed[0];
+
+    printf("h1: %f, %f\n", trainingStep * hidden3Error * net.computed[1], trainingStep * hidden3Error * net.computed[0]);
+    
+    newWeights[4] += trainingStep * hidden2Error * net.computed[1];
+    newWeights[2] += trainingStep * hidden2Error * net.computed[0];
+
+    printf("%f\n", newWeights[3]);
+    printArr(newWeights, 8);
 }
 
 
@@ -112,4 +131,11 @@ int main(){
 
 double sigmoid(double z) {
     return 1.0 / (1.0 + exp(- z));
+}
+
+void printArr(double arr[], size_t count) {
+    printf("arr: [%f", arr[0]);
+    for (size_t i = 1; i < count; i++)
+        printf(", %f", arr[i]);
+    printf("]\n");
 }
