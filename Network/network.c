@@ -23,7 +23,7 @@ int main(){
     /********* NETWORK INIT *********/
     /********************************/
 
-    srand(time(NULL));
+    srand(3);
     
     Network net;
 
@@ -104,7 +104,7 @@ int main(){
     //          [i -> 0, i -> 1, 0 -> 2, 0 -> 3, 1 -> 2, 1 -> 3, 2 -> 4, 3 -> 4]
 
 
-    size_t iter = 100000000;
+    size_t iter = 10000000;
     for (size_t i = 0; i < iter; i++) {
         for (size_t testIndex = 0; testIndex < testMaxCount; testIndex++) {
             net.computed[0] = trainingSet[2 * testIndex];
