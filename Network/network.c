@@ -72,6 +72,14 @@ int main(){
 
     }
 
+
+    unsigned int propPrint = 0;
+    unsigned int backPrint = 0;
+    unsigned int finalTests = 1;
+    unsigned int finalPrints = 1;
+    unsigned int packedMerge = 0;
+
+
     //size_t testIndex = 1;
     size_t testMaxCount = sizeof(expectedResults) / sizeof(expectedResults[0]);
     double newWeights[8];
@@ -106,9 +114,10 @@ int main(){
     /********* PROPAGATION **********/
     /********************************/
 
-            forwardPropagation(net);
+            forwardPropagation(net, propPrint);
 
-            printf("\nafter, activatedOut = %f\n", net.computed[4]);
+            if (propPrint)
+                printf("\nafter, activatedOut = %f\n", net.computed[4]);
 
     /********************************/
     /******* BACKPROPAGATION ********/
@@ -117,7 +126,8 @@ int main(){
             // 1 - Calcul de l'erreur sortie
 
             double outputError = (expectedResults[testIndex] - net.computed[4]) * net.computed[4] * (1 - net.computed[4]);
-            printf("output error = %f\n", outputError);
+            if (backPrint)
+                printf("output error = %f\n", outputError);
 
             // 2 - Poids sortie
             double w3 = trainingStep * outputError * net.computed[3];
@@ -130,8 +140,9 @@ int main(){
 
             double hidden3Error = (net.computed[3] * (1 - net.computed[3])) * (outputError * w3);
             double hidden2Error = (net.computed[2] * (1 - net.computed[2])) * (outputError * w2);
-
-            printf("hidden errors = %f, %f\n", hidden3Error, hidden2Error);
+            
+            if (backPrint)
+                printf("hidden errors = %f, %f\n", hidden3Error, hidden2Error);
 
             // 4 - Poids caches
 
@@ -139,13 +150,33 @@ int main(){
             newWeights[3] += trainingStep * hidden3Error * net.computed[0];
             newBias[3] += trainingStep * hidden3Error;
 
-            printf("h1: %f, %f\n", trainingStep * hidden3Error * net.computed[1], trainingStep * hidden3Error * net.computed[0]);
+            if (backPrint)
+                printf("h1: %f, %f\n", trainingStep * hidden3Error * net.computed[1], trainingStep * hidden3Error * net.computed[0]);
 
             newWeights[4] += trainingStep * hidden2Error * net.computed[1];
             newWeights[2] += trainingStep * hidden2Error * net.computed[0];
             newBias[2] += trainingStep * hidden2Error;
 
+            if (backPrint)
+                printArr(newWeights, 8, "newWeights");
+            if (!packedMerge) {
+                for (size_t j = 2; j < 8; j++) {
+                    net.weights[j] -= newWeights[j];
+                    newWeights[j] = 0;
+                }
+                for (size_t j = 2; j < 5; j++) {
+                    net.bias[j] -= newBias[j];
+                    newBias[j] = 0;
+                }
+            }
+        }
+
+        if (backPrint) {
+            printf("%f\n", newWeights[3]);
             printArr(newWeights, 8, "newWeights");
+        }
+
+        if (packedMerge) {
             for (size_t j = 2; j < 8; j++) {
                 net.weights[j] -= newWeights[j];
                 newWeights[j] = 0;
@@ -155,38 +186,34 @@ int main(){
                 newBias[j] = 0;
             }
         }
-
-        printf("%f\n", newWeights[3]);
-        printArr(newWeights, 8, "newWeights");
- 
-        /*for (size_t j = 2; j < 8; j++) {
-            net.weights[j] -= newWeights[j];
-            newWeights[j] = 0;
-        }*/
     }
-    printArr(net.weights, 8, "final weights");
-    printArr(net.bias, 5, "final biases");
 
+    if (finalPrints) {
+        printArr(net.weights, 8, "final weights");
+        printArr(net.bias, 5, "final biases");
+    }
 
-    net.computed[0] = 0;
-    net.computed[1] = 0;
-    forwardPropagation(net);
-    printf("(0, 0) = %f\n", net.computed[4]);
-    
-    net.computed[0] = 0;
-    net.computed[1] = 1;
-    forwardPropagation(net);
-    printf("(0, 1) = %f\n", net.computed[4]);
+    if (finalTests) {
+        net.computed[0] = 0;
+        net.computed[1] = 0;
+        forwardPropagation(net, 0);
+        printf("(0, 0) = %f\n", net.computed[4]);
 
-    net.computed[0] = 1;
-    net.computed[1] = 0;
-    forwardPropagation(net);
-    printf("(1, 0) = %f\n", net.computed[4]);
+        net.computed[0] = 0;
+        net.computed[1] = 1;
+        forwardPropagation(net, 0);
+        printf("(0, 1) = %f\n", net.computed[4]);
 
-    net.computed[0] = 1;
-    net.computed[1] = 1;
-    forwardPropagation(net);
-    printf("(1, 1) = %f\n", net.computed[4]);
+        net.computed[0] = 1;
+        net.computed[1] = 0;
+        forwardPropagation(net, 0);
+        printf("(1, 0) = %f\n", net.computed[4]);
+
+        net.computed[0] = 1;
+        net.computed[1] = 1;
+        forwardPropagation(net, 0);
+        printf("(1, 1) = %f\n", net.computed[4]);
+    }
 }
 
 
@@ -194,19 +221,22 @@ int main(){
     /* Forward Propagation function */
     /********************************/
 
-void forwardPropagation(Network net) {
+void forwardPropagation(Network net, unsigned int propPrint) {
 
-    //printf("\nBegin forward propagation\n");
+    if (propPrint)
+        printf("\nBegin forward propagation\n");
 
     // Hidden Layer
     double netH1 = 0.0, netH2 = 0.0;
     
     // H1 Processing
     netH1 = net.weights[0] * net.computed[0] + net.weights[2] * net.computed[1] + net.bias[2] * 1;
-    //printf("netH1 = %f\n", netH1);
+    if (propPrint)
+        printf("netH1 = %f\n", netH1);
     // H2 Processing
     netH2 = net.weights[1] * net.computed[0] + net.weights[3] * net.computed[1] + net.bias[3] * 1;
-    //printf("netH2 = %f\n", netH2);
+    if (propPrint)
+        printf("netH2 = %f\n", netH2);
 
     // Sigmoid
     double activatedH1 = sigmoid(netH1), activatedH2 = sigmoid(netH2);
@@ -214,20 +244,24 @@ void forwardPropagation(Network net) {
     net.computed[2] = activatedH1;
     net.computed[3] = activatedH2;
 
-    //printf("activatedH1 = %f\n", activatedH1);
-    //printf("activatedH2 = %f\n", activatedH2);
+    if (propPrint) {
+        printf("activatedH1 = %f\n", activatedH1);
+        printf("activatedH2 = %f\n", activatedH2);
+    }
 
     // Output Layer
     double outH1 = 0.0;
 
     // Out Processing
     outH1 = net.weights[4] * activatedH1 + net.weights[5] * activatedH2 + net.bias[4] * 1;
-    //printf("outH1 = %f\n", outH1);
+    if (propPrint)
+        printf("outH1 = %f\n", outH1);
 
     // Sigmoid
     double activatedOut = sigmoid(outH1);
     
-    //printf("activatedOut = %f\n", activatedOut);
+    if (propPrint)
+        printf("activatedOut = %f\n", activatedOut);
 
     net.computed[4] = activatedOut;
 
