@@ -82,7 +82,7 @@ int main(){
 
     //size_t testIndex = 1;
     size_t testMaxCount = sizeof(expectedResults) / sizeof(expectedResults[0]);
-    double newWeights[10];
+    double newWeights[11];
     double newBias[6];
     for (size_t i = 0; i < 10; i++)
         newWeights[i] = 0;
@@ -236,7 +236,7 @@ void forwardPropagation(Network net, unsigned int propPrint) {
         printf("\nBegin forward propagation\n");
 
     // Hidden Layer
-    double netH1 = 0.0, netH2 = 0.0;
+    double netH1 = 0.0, netH2 = 0.0, netH3;
     
     // H1 Processing
     netH1 = net.weights[2] * net.computed[0] + net.weights[3] * net.computed[1] + net.bias[2] * 1;
@@ -247,11 +247,14 @@ void forwardPropagation(Network net, unsigned int propPrint) {
     if (propPrint)
         printf("netH2 = %f\n", netH2);
 
+    netH3 = net.weights[8] * net.computed[0] + net.weights[9] * net.computed[1] + net.bias[5] * 1;
+
     // Sigmoid
-    double activatedH1 = sigmoid(netH1), activatedH2 = sigmoid(netH2);
+    double activatedH1 = sigmoid(netH1), activatedH2 = sigmoid(netH2), activatedH3 = sigmoid(netH3);
 
     net.computed[2] = activatedH1;
     net.computed[3] = activatedH2;
+    net.computed[5] = activatedH3;
 
     if (propPrint) {
         printf("activatedH1 = %f\n", activatedH1);
@@ -262,7 +265,7 @@ void forwardPropagation(Network net, unsigned int propPrint) {
     double outH1 = 0.0;
 
     // Out Processing
-    outH1 = net.weights[6] * activatedH1 + net.weights[7] * activatedH2 + net.bias[4] * 1;
+    outH1 = net.weights[6] * activatedH1 + net.weights[7] * activatedH2 + net.weights[10] * activatedH3 + net.bias[4] * 1;
     if (propPrint)
         printf("outH1 = %f\n", outH1);
 
