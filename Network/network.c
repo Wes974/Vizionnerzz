@@ -74,12 +74,18 @@ int main(){
 
     size_t testIndex = 0;
     size_t testMaxCount = sizeof(expectedResults) / sizeof(expectedResults[0]);
+    double newWeights[8];
+    // Weights: [ in0.0,  in1.0, hid0.0, hid0.1, hid1.0, hid1.1, out0.0, out0.1]
+    //          [ neur0,  neur1,  neur2,  neur2,  neur3,  neur3,  neur4,  neur4]
+    //          [    w0,     w1,     w2,     w3,     w4,     w5,     w6,     w7]
+    //          [i -> 0, i -> 1, 0 -> 2, 0 -> 3, 1 -> 2, 1 -> 3, 2 -> 4, 3 -> 4]
+
 
     /********************************/
     /********* PROPAGATION **********/
     /********************************/
 
-    for (size_t i = 0; i < 8; i++) {
+    for (size_t i = 2; i < 8; i++) {
     
         
 
@@ -88,7 +94,20 @@ int main(){
     /********************************/
     /******* BACKPROPAGATION ********/
     /********************************/
- 
+    
+    // 1 - Calcul de l'erreur sortie
+    
+    double outputError = (expectedResults[testIndex] - net.computed[4]) * net.computed[4] * (1 - net.computed[4]);
+    printf("output error = %f\n", outputError);
+
+    // 2 - Poids sortie
+    
+    newWeights[7]
+
+    // 3 - Calcul de l'erreur couche cachee
+    
+    // 4 - Poids caches
+    
 }
 
 
