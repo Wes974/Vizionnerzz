@@ -7,6 +7,7 @@
 
 
 int main(){
+    //EXAMPLE//
     unsigned int matrixPicture[3*5] = {1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0}; 
 
     unsigned int width = 5;
@@ -14,8 +15,6 @@ int main(){
 
     //LINE//
     
-    //int result = mkdir("./ocr", 0777);
-    //printf("%i", result);
     unsigned int * listLines = matrixToListLine(matrixPicture, height, width);
     unsigned int numberOfLine = lineSave(listLines, matrixPicture, width, height);
     //WORD//
@@ -53,8 +52,6 @@ int main(){
 
     */
 
-    //WORD//
-
     unsigned int * listWord = matrixToListLine(matrixPicture, height, width);
     unsigned int threshold = thresholdDefine(listWord, width);
 
@@ -64,8 +61,6 @@ int main(){
  
     unsigned int * charLines = matrixToListLine(matrixPicture, height, width); 
     unsigned int charNumber = charSave(charLines, matrixPicture, width, height, numberOfLine, numberOfWord);
-
-    printf("%i", charNumber);
 
     return 0;
 }

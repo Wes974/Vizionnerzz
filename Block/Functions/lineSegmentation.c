@@ -9,7 +9,7 @@ unsigned int * matrixToListLine(unsigned int matrix[], unsigned int height, unsi
     for(unsigned int j = 0; j < height; j++){
         unsigned int value = 0;
         for (unsigned int i = 0; i < width; i++){
-            if(matrix[j*height+i] == 1){                                  //If the column contain at least 1 black pixel, the corresponding position in the list is black.
+            if(matrix[j*height+i] == 1){                                  //If the line contain at least 1 black pixel, the corresponding position in the list is black.
                 value = 1;
             }
         }
@@ -19,9 +19,9 @@ unsigned int * matrixToListLine(unsigned int matrix[], unsigned int height, unsi
     return list;
 }
 
-void cutLine(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsigned int width, unsigned int height, unsigned int numberOfLine){             //use the position of the begining and the ned of a word and
-                                                                                                    //return the word (a matrix)
-    FILE *fp;
+void cutLine(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsigned int width, unsigned int height, unsigned int numberOfLine){             //use the position of the begining and the ned of a line and
+                                                                                                    //return the line (a matrix)
+    FILE *fp;                           //Find the line matrix in data/line_number/line_number.txt
     char filename[49];
     sprintf(filename, "./data/line_%i/line_%i.txt", numberOfLine, numberOfLine);
     fp = fopen(filename, "w");
@@ -34,7 +34,6 @@ void cutLine(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
         for(unsigned int j = 0; j < width; j++){
             fputc(matrix[i*width+j] + 48, fp);
         }
-        //fprintf(fp, "\n");
     }
     fprintf(fp, " ");
     while (height > 0){
@@ -46,8 +45,7 @@ void cutLine(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
 
 
 unsigned int lineSave(unsigned int list[], unsigned int matrix[], unsigned int width, unsigned int height){    //find the positions between the begining and the end of a 
-                                                                                                    //word and call the cut function to return the list containing
-                                                                                                    //all the word.
+                                                                                                    //line and call the cut function to return every line in corresponding directories.
     unsigned int pos1 = -1;
     unsigned int pos2 = 0;
     unsigned int inALine = 0;

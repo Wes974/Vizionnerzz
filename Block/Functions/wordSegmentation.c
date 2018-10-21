@@ -44,27 +44,32 @@ unsigned int thresholdDefine(unsigned int list[], unsigned int width){          
 
 void cutWord(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsigned int width, unsigned int height, unsigned int numberOfWord, unsigned int lineNumber){             //use the position of the begining and the ned of a word and
                                                                                                     //return the word (a matrix)
+    
     FILE *fp;
     char filename[49];
     sprintf(filename, "./data/line_%i/word_%i/word_%i.txt", lineNumber, numberOfWord, numberOfWord);
     fp = fopen(filename, "w");
+    /*
     if(fp == NULL){
+        //printf("no");
         char directoryName[49];
         sprintf(directoryName, "./data/line_%i/word_%i/", lineNumber, numberOfWord);
         mkdir(directoryName, 0700);
     }
-    for(unsigned int i = pos1;i < pos2; i++){
-        for(unsigned int j = 0; j < height; j++){
-            fputc(matrix[i*height+j] + 48, fp);
+    */
+    for(unsigned int i = 0;i < height; i++){
+        for(unsigned int j = pos1; j < pos2; j++){
+            //fputc(matrix[j*width+i] + 48, fp);
         }
         //fprintf(fp, "\n");
     }
-    fprintf(fp, " ");
+    //fprintf(fp, " ");
     while (width > 0){
-        fputc(width % 10 + 48, fp);
+        //fputc(width % 10 + 48, fp);
         width /= 10;
     } 
-    fclose(fp);
+    //fclose(fp);
+    
 }
 
 unsigned int wordSave(unsigned int threshold, unsigned int list[], unsigned int matrix[], unsigned int width, unsigned int height, unsigned int lineNumber){    //find the positions between the begining and the end of a 

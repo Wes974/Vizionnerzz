@@ -19,8 +19,10 @@ unsigned int * matrixToListChar(unsigned int matrix[], unsigned int height, unsi
     return list;
 }
 
-void cutChar(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsigned int width, unsigned int height, unsigned int numberOfLine, unsigned int numberOfWord, unsigned int numberOfChar){             //use the position of the begining and the ned of a word and
-                                                                                                    //return the word (a matrix)
+void cutChar(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsigned int width, unsigned int height, unsigned int numberOfLine, unsigned int numberOfWord, unsigned int numberOfChar){             //use the position of the begining and the ned of a character and
+                                                                                                    //return the character (a matrix)
+    
+    /*
     FILE *fp;
     char filename[49];
     sprintf(filename, "./data/line_%i/word_%i/char_%i.txt", numberOfLine, numberOfWord, numberOfChar);
@@ -31,24 +33,25 @@ void cutChar(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
         sprintf(directoryName, "./data/line_%i/word_%i/", numberOfLine, numberOfWord);
         mkdir(directoryName, 0700);
     }
+    */
     for(unsigned int i = 0;i < height; i++){
         for(unsigned int j = pos1; j < pos2; j++){
-            fputc(matrix[i*width+j] + 48, fp);
+            //fputc(matrix[i*width+j] + 48, fp);
         }
         //fprintf(fp, "\n");
     }
-    fprintf(fp, " ");
+    //fprintf(fp, " ");
     while (height > 0){
-        fputc(height % 10 + 48, fp);
+        //fputc(height % 10 + 48, fp);
         height /= 10;
     }
-    fclose(fp);
+    //fclose(fp);
 }
 
 
 unsigned int charSave(unsigned int list[], unsigned int matrix[], unsigned int width, unsigned int height, unsigned int numberOfLine, unsigned int numberOfWord){    //find the positions between the begining and the end of a 
-                                                                                                    //word and call the cut function to return the list containing
-                                                                                                    //all the word.
+                                                                                                    //character and call the cut function to return every character
+                                                                
     unsigned int pos1 = -1;
     unsigned int pos2 = 0;
     unsigned int inAChar = 0;
