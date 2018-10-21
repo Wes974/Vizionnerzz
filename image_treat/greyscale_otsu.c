@@ -5,8 +5,6 @@
 
 void grayscale(SDL_Surface *surf, Uint8 array[], size_t rows, size_t col)
 {
-    //SDL_Surface* image = SDL_CreateRGBSurface(
-
     for(size_t i = 0; i < rows; i++)
     {
         for(size_t j = 0; j < col; j++)
@@ -14,7 +12,6 @@ void grayscale(SDL_Surface *surf, Uint8 array[], size_t rows, size_t col)
             Uint32 pixel = get_pixel(surf, j, i);
             Uint8 r, g, b;
             SDL_GetRGB(pixel, surf->format, &r, &g, &b);
-            //printf("r: %d g: %d b: %d\n", r, g, b);
             array[i * col + j] = 0.3 * r + 0.59 * g + 0.11 * b;
         }
     }
@@ -35,13 +32,16 @@ void create_Histo(Uint8 *image, size_t rows, size_t col, unsigned long *histo)
     }
 }
 
-//Find the treshold of otsu by constructing a histogram
+//Find the threshold of otsu by constructing a histogram
 
-unsigned char otsu_treshold(Uint8 array[], size_t rows, size_t col)
+unsigned char otsu_threshold(Uint8 array[], size_t rows, size_t col)
 {
+    //Initialisation and creation of the grayscale histogram
     unsigned long *histo =calloc(256, sizeof(unsigned long));
     create_Histo(array, rows, col, histo);
-    Uint8 treshold = 0;
+    
+    //Variable Initialisation
+    Uint8 threshold = 0;
     float var_max = 0, prov_tresh = 0;
     unsigned long sum = 0, sumB = 0;
     unsigned long q1 = 0, q2 = 0, m1 = 0, m2 = 0;
@@ -52,41 +52,46 @@ unsigned char otsu_treshold(Uint8 array[], size_t rows, size_t col)
 
     for(int j = 0; j < 256; j++)
     {
+        //Weight Background
         q1 += histo[j];
         if(q1 == 0)
             continue;
+        
+        //Weight Foreground
         q2 = N - q1;
         if(q2 == 0)
             break;
 
         sumB += j * histo[j];
-        m1 = sumB / q1;
-        m2 = (sum - sumB) / q2;
+        
+        m1 = sumB / q1;             //Mean Background
+        m2 = (sum - sumB) / q2;     //Mean Foreground
 
+        //Calculate the Between Class Variance
         prov_tresh = q1 * q2 * (m1 - m2) * (m1 - m2);
 
+        //Check if the new Between Class Variance is the max Variance
         if(prov_tresh > var_max)
         {
-            treshold = j;
+            threshold = j;
             var_max = prov_tresh;
         }
     }
 
-    return treshold;
+    return threshold;
 }
 
 //Return a binarized matrix from a greyscaled matrix
 
 void otsu(Uint8 image[], Uint8 b_image[], size_t rows, size_t col)
 {
-    Uint8 treshold = otsu_treshold(image, rows, col);
-    //printf("Treshold: %d\n", treshold);
+    Uint8 threshold = otsu_threshold(image, rows, col);
     
     for(size_t i = 0; i < rows; i++)
     {
         for(size_t j = 0; j < col; j++)
         {
-            if(image[i * col + j] >= treshold)
+            if(image[i * col + j] >= threshold)
                 b_image[i * col + j] = 255;
             else
                 b_image[i * col + j] = 0;
