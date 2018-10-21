@@ -17,9 +17,9 @@ struct Network {
     double *count_nr;       // Tableau des nombres de neuronnes par couches
     double *count_weight;   // Tableau des nombres de weights par neuronnes
     
-
-
 };
+
+void forwardPropagation(Network net);
 
 double sigmoid(double z);
 void printArr(double arr[], size_t count);
