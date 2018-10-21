@@ -21,9 +21,6 @@ struct Network {
 
 };
 
-
-Network createXOR();
-void fillArray(double *arr[], size_t count, size_t inputSize);
-void forwardPropagation();
+double sigmoid(double z);
 
 #endif

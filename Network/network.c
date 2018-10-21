@@ -11,15 +11,23 @@
 
 int main(){
 
+    /********************************/    
+    /********* TRAINIG DATA *********/
+    /********************************/
+    
+    int trainingSet[] = {0, 0, 0, 1, 1, 0, 1, 1};
+    double expectedResults[] = {0, 1, 1, 0};
+
+    /********************************/
+    /********* NETWORK INIT *********/
+    /********************************/
+
     srand(time(NULL));
     
     Network net;
 
     net.computed = calloc(5, sizeof(double));
-    printf("sizeof computed %lu\n", sizeof(net.computed));
     
-    printf("%lu\n", sizeof(net));
-
     double weights[8] = {1, 1, 1, 1, 1, 1, 1, 1};
     
     for (size_t i = 3; i < 8; i++) {
@@ -41,6 +49,15 @@ int main(){
     double bias[5] = {0, 0, 0, 0, 0};
     net.bias = bias;
 
+
+    /********************************/
+    /******** VERIFICATIONS *********/
+    /********************************/
+
+    printf("sizeof computed %lu\n", sizeof(net.computed));
+    
+    printf("%lu\n", sizeof(net));
+
     printf("\n%f\n", net.bias[3]);
 
     printf("Parcours de computed\n");
@@ -53,6 +70,10 @@ int main(){
         printf("weight[%lu] = %f\n", i, net.weights[i]);
 
     }
+
+    /********************************/
+    /********* PROPAGATIONS *********/
+    /********************************/
 
 }
 
