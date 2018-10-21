@@ -34,7 +34,6 @@ int main(){
     for (size_t i = 2; i < 8; i++) {
 
         double r = (double)rand() / (double)(RAND_MAX / 5);
-        printf("random[%lu] = %f\n", i, r);
         weights[i] = r;
 
     }
@@ -80,7 +79,7 @@ int main(){
     /********* PROPAGATION **********/
     /********************************/
 
-            forwardPropagation(net, propPrint);
+            forwardPropagation(net);
 
     /********************************/
     /******* BACKPROPAGATION ********/
@@ -91,25 +90,34 @@ int main(){
             double outputError = expectedResults[testIndex] - net.computed[4];
 
             // 2 - Output weights
-            double w3 = trainingStep * outputError * net.computed[3] * (1 - net.computed[4]) * net.computed[4];
-            double w2 = trainingStep * outputError * net.computed[2] * (1 - net.computed[4]) * net.computed[4];
+            double w3 = trainingStep * outputError * net.computed[3] *
+                (1 - net.computed[4]) * net.computed[4];
+            double w2 = trainingStep * outputError * net.computed[2] *
+                (1 - net.computed[4]) * net.computed[4];
 
             newWeights[7] += w3;
             newWeights[6] += w2;
-            newBias[4] += trainingStep * outputError * net.computed[4] * (1 - net.computed[4]);
+            newBias[4] += trainingStep * outputError * net.computed[4] * 
+                (1 - net.computed[4]);
 
             // 3 - Hidden layer errors
             double hidden3Error = outputError * net.weights[7];
             double hidden2Error = outputError * net.weights[6];
 
             // 4 - Hidden layer weight
-            newWeights[5] += trainingStep * hidden3Error * net.computed[3] * (1 - net.computed[3]) * net.computed[1];
-            newWeights[4] += trainingStep * hidden3Error * net.computed[3] * (1 - net.computed[3]) * net.computed[0];
-            newBias[3] += trainingStep * hidden3Error * net.computed[3] * (1 - net.computed[3]);
+            newWeights[5] += trainingStep * hidden3Error * net.computed[3] * 
+                (1 - net.computed[3]) * net.computed[1];
+            newWeights[4] += trainingStep * hidden3Error * net.computed[3] *
+                (1 - net.computed[3]) * net.computed[0];
+            newBias[3] += trainingStep * hidden3Error * net.computed[3] *
+                (1 - net.computed[3]);
 
-            newWeights[3] += trainingStep * hidden2Error * net.computed[2] * (1 - net.computed[2]) * net.computed[1];
-            newWeights[2] += trainingStep * hidden2Error * net.computed[2] * (1 - net.computed[2]) * net.computed[0];
-            newBias[2] += trainingStep * hidden2Error * net.computed[2] * (1 - net.computed[2]);
+            newWeights[3] += trainingStep * hidden2Error * net.computed[2] *
+                (1 - net.computed[2]) * net.computed[1];
+            newWeights[2] += trainingStep * hidden2Error * net.computed[2] *
+                (1 - net.computed[2]) * net.computed[0];
+            newBias[2] += trainingStep * hidden2Error * net.computed[2] *
+                (1 - net.computed[2]);
 
             for (size_t j = 2; j < 8; j++) {
                 net.weights[j] += newWeights[j];
@@ -129,22 +137,22 @@ int main(){
 
     net.computed[0] = 0;
     net.computed[1] = 0;
-    forwardPropagation(net, 0);
+    forwardPropagation(net);
     printf("(0, 0) = %f\n", net.computed[4]);
 
     net.computed[0] = 0;
     net.computed[1] = 1;
-    forwardPropagation(net, 0);
+    forwardPropagation(net);
     printf("(0, 1) = %f\n", net.computed[4]);
 
     net.computed[0] = 1;
     net.computed[1] = 0;
-    forwardPropagation(net, 0);
+    forwardPropagation(net);
     printf("(1, 0) = %f\n", net.computed[4]);
 
     net.computed[0] = 1;
     net.computed[1] = 1;
-    forwardPropagation(net, 0);
+    forwardPropagation(net);
     printf("(1, 1) = %f\n", net.computed[4]);
 }
 
@@ -153,16 +161,18 @@ int main(){
     /* Forward Propagation function */
     /********************************/
 
-void forwardPropagation(Network net, unsigned int propPrint) {
+void forwardPropagation(Network net) {
 
     // Hidden Layer
     double netH1 = 0.0, netH2 = 0.0;
 
     // H1 Processing
-    netH1 = net.weights[2] * net.computed[0] + net.weights[3] * net.computed[1] + net.bias[2] * 1;
+    netH1 = net.weights[2] * net.computed[0] + net.weights[3] * net.computed[1]
+        + net.bias[2] * 1;
 
     // H2 Processing
-    netH2 = net.weights[4] * net.computed[0] + net.weights[5] * net.computed[1] + net.bias[3] * 1;
+    netH2 = net.weights[4] * net.computed[0] + net.weights[5] *net.computed[1]
+        + net.bias[3] * 1;
 
     // Sigmoid
     double activatedH1 = sigmoid(netH1), activatedH2 = sigmoid(netH2);
@@ -174,7 +184,8 @@ void forwardPropagation(Network net, unsigned int propPrint) {
     double outH1 = 0.0;
 
     // Out Processing
-    outH1 = net.weights[6] * activatedH1 + net.weights[7] * activatedH2 + net.bias[4] * 1;
+    outH1 = net.weights[6] * activatedH1 + net.weights[7] * activatedH2 
+        + net.bias[4] * 1;
 
     // Sigmoid
     double activatedOut = sigmoid(outH1);
