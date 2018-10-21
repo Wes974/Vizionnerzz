@@ -96,6 +96,8 @@ int main(){
 
     forwardPropagation(net);
 
+    printf("\nafter, activatedOut = %f", net.computed[4]);
+
     /********************************/
     /******* BACKPROPAGATION ********/
     /********************************/
