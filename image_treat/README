@@ -2,7 +2,7 @@
 
 To compile the program:
 
-make tests
+make
 
 Software utilisation:
 
