@@ -22,5 +22,5 @@ struct Network {
 void forwardPropagation(Network net);
 
 double sigmoid(double z);
-void printArr(double arr[], size_t count);
+void printArr(double arr[], size_t count, char name[]);
 #endif
