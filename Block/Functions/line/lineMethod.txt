@@ -1,2 +1,0 @@
-matrix to list (vertical axe)
-what to save sans la fonction threshold
