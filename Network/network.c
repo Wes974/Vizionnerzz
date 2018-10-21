@@ -202,10 +202,10 @@ void forwardPropagation(Network net) {
     double netH1 = 0.0, netH2 = 0.0;
     
     // H1 Processing
-    netH1 = net.weights[0] * net.computed[0] + net.weights[2] * net.computed[1] + net.bias[0] * 1;
+    netH1 = net.weights[0] * net.computed[0] + net.weights[2] * net.computed[1] + net.bias[2] * 1;
     //printf("netH1 = %f\n", netH1);
     // H2 Processing
-    netH2 = net.weights[1] * net.computed[0] + net.weights[3] * net.computed[1] + net.bias[0] * 1;
+    netH2 = net.weights[1] * net.computed[0] + net.weights[3] * net.computed[1] + net.bias[3] * 1;
     //printf("netH2 = %f\n", netH2);
 
     // Sigmoid
@@ -221,7 +221,7 @@ void forwardPropagation(Network net) {
     double outH1 = 0.0;
 
     // Out Processing
-    outH1 = net.weights[4] * activatedH1 + net.weights[5] * activatedH2 + net.bias[1] * 1;
+    outH1 = net.weights[4] * activatedH1 + net.weights[5] * activatedH2 + net.bias[4] * 1;
     //printf("outH1 = %f\n", outH1);
 
     // Sigmoid
