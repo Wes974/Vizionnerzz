@@ -19,6 +19,8 @@ struct Network {
     
 };
 
+void forwardPropagation(Network net);
+
 double sigmoid(double z);
 
 #endif

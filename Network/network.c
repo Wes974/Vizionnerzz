@@ -94,40 +94,7 @@ int main(){
     /********* PROPAGATION **********/
     /********************************/
 
-    printf("\nBegin forward propagation\n");
-
-    // Hidden Layer
-    double netH1 = 0.0, netH2 = 0.0;
-    
-    // H1 Processing
-    netH1 = net.weights[0] * net.computed[0] + net.weights[2] * net.computed[1] + net.bias[0] * 1;
-    printf("netH1 = %f\n", netH1);
-    // H2 Processing
-    netH2 = net.weights[1] * net.computed[0] + net.weights[3] * net.computed[1] + net.bias[0] * 1;
-    printf("netH2 = %f\n", netH2);
-
-    // SIGMOIDIFICATION
-    double activatedH1 = sigmoid(netH1), activatedH2 = sigmoid(netH2);
-
-    net.computed[2] = activatedH1;
-    net.computed[3] = activatedH2;
-
-    printf("activatedH1 = %f\n", activatedH1);
-    printf("activatedH2 = %f\n", activatedH2);
-
-    // Output Layer
-    double outH1 = 0.0;
-
-    // Out Processing
-    outH1 = net.weights[4] * activatedH1 + weights[5] * activatedH2 + net.bias[1] * 1;
-    printf("outH1 = %f\n", outH1);
-
-    // SIGMOIDIFICATION
-    double activatedOut = sigmoid(outH1);
-    
-    printf("activatedOut = %f\n", activatedOut);
-
-    net.computed[4] = activatedOut;
+    forwardPropagation(net);
 
     /********************************/
     /******* BACKPROPAGATION ********/
@@ -149,9 +116,47 @@ int main(){
 }
 
 
+    /********************************/
+    /* Forward Propagation function */
+    /********************************/
+
 void forwardPropagation(Network net) {
 
 
+    printf("\nBegin forward propagation\n");
+
+    // Hidden Layer
+    double netH1 = 0.0, netH2 = 0.0;
+    
+    // H1 Processing
+    netH1 = net.weights[0] * net.computed[0] + net.weights[2] * net.computed[1] + net.bias[0] * 1;
+    printf("netH1 = %f\n", netH1);
+    // H2 Processing
+    netH2 = net.weights[1] * net.computed[0] + net.weights[3] * net.computed[1] + net.bias[0] * 1;
+    printf("netH2 = %f\n", netH2);
+
+    // Sigmoid
+    double activatedH1 = sigmoid(netH1), activatedH2 = sigmoid(netH2);
+
+    net.computed[2] = activatedH1;
+    net.computed[3] = activatedH2;
+
+    printf("activatedH1 = %f\n", activatedH1);
+    printf("activatedH2 = %f\n", activatedH2);
+
+    // Output Layer
+    double outH1 = 0.0;
+
+    // Out Processing
+    outH1 = net.weights[4] * activatedH1 + net.weights[5] * activatedH2 + net.bias[1] * 1;
+    printf("outH1 = %f\n", outH1);
+
+    // Sigmoid
+    double activatedOut = sigmoid(outH1);
+    
+    printf("activatedOut = %f\n", activatedOut);
+
+    net.computed[4] = activatedOut;
 
 }
 
