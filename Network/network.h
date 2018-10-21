@@ -19,7 +19,7 @@ struct Network {
     
 };
 
-void forwardPropagation(Network net);
+void forwardPropagation(Network net, unsigned int propPrint);
 
 double sigmoid(double z);
 void printArr(double arr[], size_t count, char name[]);
