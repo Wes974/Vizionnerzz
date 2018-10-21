@@ -17,7 +17,7 @@ int main(){
     
     int trainingSet[] = {0, 0, 0, 1, 1, 0, 1, 1};
     double expectedResults[] = {0, 1, 1, 0};
-    double trainingStep = 0.1;
+    double trainingStep = 0.2;
 
     /********************************/
     /********* NETWORK INIT *********/
@@ -104,8 +104,8 @@ int main(){
     //          [i -> 0, i -> 1, 0 -> 2, 0 -> 3, 1 -> 2, 1 -> 3, 2 -> 4, 3 -> 4]
 
 
-
-    for (size_t i = 0; i < 10000; i++) {
+    size_t iter = 100000000;
+    for (size_t i = 0; i < iter; i++) {
         for (size_t testIndex = 0; testIndex < testMaxCount; testIndex++) {
             net.computed[0] = trainingSet[2 * testIndex];
             net.computed[1] = trainingSet[2 * testIndex + 1];
@@ -125,47 +125,51 @@ int main(){
 
             // 1 - Calcul de l'erreur sortie
 
-            double outputError = (expectedResults[testIndex] - net.computed[4]) * net.computed[4] * (1 - net.computed[4]);
+            double outputError = expectedResults[testIndex] - net.computed[4];
             if (backPrint)
                 printf("output error = %f\n", outputError);
 
             // 2 - Poids sortie
-            double w3 = trainingStep * outputError * net.computed[3];
-            double w2 = trainingStep * outputError * net.computed[2];
+            double w3 = trainingStep * outputError * net.computed[3] * (1 - net.computed[4]) * net.computed[4];
+            double w2 = trainingStep * outputError * net.computed[2] * (1 - net.computed[4]) * net.computed[4];
+
+            //double DW6 = trainingStep * outputError * (net.computed[4] - net.computed[4] * net.computed[4]) * net.computed[2];
+            //double DW7 = trainingStep * outputError * (net.computed[4] - net.computed[4] * net.computed[4]) * net.computed[3];
+
             newWeights[7] += w3;
             newWeights[6] += w2;
-            newBias[4] += trainingStep * outputError;
+            newBias[4] += trainingStep * outputError * net.computed[4] * (1 - net.computed[4]);
 
             // 3 - Calcul de l'erreur couche cachee
 
-            double hidden3Error = (net.computed[3] * (1 - net.computed[3])) * (outputError * w3);
-            double hidden2Error = (net.computed[2] * (1 - net.computed[2])) * (outputError * w2);
+            double hidden3Error = outputError * net.weights[7];
+            double hidden2Error = outputError * net.weights[6];
             
             if (backPrint)
                 printf("hidden errors = %f, %f\n", hidden3Error, hidden2Error);
 
             // 4 - Poids caches
 
-            newWeights[5] += trainingStep * hidden3Error * net.computed[1];
-            newWeights[3] += trainingStep * hidden3Error * net.computed[0];
-            newBias[3] += trainingStep * hidden3Error;
+            newWeights[5] += trainingStep * hidden3Error * net.computed[3] * (1 - net.computed[3]) * net.computed[1];
+            newWeights[4] += trainingStep * hidden3Error * net.computed[3] * (1 - net.computed[3]) * net.computed[0];
+            newBias[3] += trainingStep * hidden3Error * net.computed[3] * (1 - net.computed[3]);
 
             if (backPrint)
                 printf("h1: %f, %f\n", trainingStep * hidden3Error * net.computed[1], trainingStep * hidden3Error * net.computed[0]);
 
-            newWeights[4] += trainingStep * hidden2Error * net.computed[1];
-            newWeights[2] += trainingStep * hidden2Error * net.computed[0];
-            newBias[2] += trainingStep * hidden2Error;
+            newWeights[3] += trainingStep * hidden2Error * net.computed[2] * (1 - net.computed[2]) * net.computed[1];
+            newWeights[2] += trainingStep * hidden2Error * net.computed[2] * (1 - net.computed[2]) * net.computed[0];
+            newBias[2] += trainingStep * hidden2Error * net.computed[2] * (1 - net.computed[2]);
 
             if (backPrint)
                 printArr(newWeights, 8, "newWeights");
             if (!packedMerge) {
                 for (size_t j = 2; j < 8; j++) {
-                    net.weights[j] -= newWeights[j];
+                    net.weights[j] += newWeights[j];
                     newWeights[j] = 0;
                 }
                 for (size_t j = 2; j < 5; j++) {
-                    net.bias[j] -= newBias[j];
+                    net.bias[j] += newBias[j];
                     newBias[j] = 0;
                 }
             }
@@ -175,7 +179,7 @@ int main(){
             printf("%f\n", newWeights[3]);
             printArr(newWeights, 8, "newWeights");
         }
-
+/*
         if (packedMerge) {
             for (size_t j = 2; j < 8; j++) {
                 net.weights[j] -= newWeights[j];
@@ -186,6 +190,7 @@ int main(){
                 newBias[j] = 0;
             }
         }
+*/
     }
 
     if (finalPrints) {
@@ -230,11 +235,11 @@ void forwardPropagation(Network net, unsigned int propPrint) {
     double netH1 = 0.0, netH2 = 0.0;
     
     // H1 Processing
-    netH1 = net.weights[0] * net.computed[0] + net.weights[2] * net.computed[1] + net.bias[2] * 1;
+    netH1 = net.weights[2] * net.computed[0] + net.weights[3] * net.computed[1] + net.bias[2] * 1;
     if (propPrint)
         printf("netH1 = %f\n", netH1);
     // H2 Processing
-    netH2 = net.weights[1] * net.computed[0] + net.weights[3] * net.computed[1] + net.bias[3] * 1;
+    netH2 = net.weights[4] * net.computed[0] + net.weights[5] * net.computed[1] + net.bias[3] * 1;
     if (propPrint)
         printf("netH2 = %f\n", netH2);
 
@@ -253,7 +258,7 @@ void forwardPropagation(Network net, unsigned int propPrint) {
     double outH1 = 0.0;
 
     // Out Processing
-    outH1 = net.weights[4] * activatedH1 + net.weights[5] * activatedH2 + net.bias[4] * 1;
+    outH1 = net.weights[6] * activatedH1 + net.weights[7] * activatedH2 + net.bias[4] * 1;
     if (propPrint)
         printf("outH1 = %f\n", outH1);
 
