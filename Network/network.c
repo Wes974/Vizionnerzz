@@ -17,6 +17,7 @@ int main(){
     
     int trainingSet[] = {0, 0, 0, 1, 1, 0, 1, 1};
     double expectedResults[] = {0, 1, 1, 0};
+    double trainingStep = 0.1;
 
     /********************************/
     /********* NETWORK INIT *********/
@@ -40,11 +41,11 @@ int main(){
 
     net.weights = weights;
 
-    double nr[] = {2, 2, 1};
-    net.count_nr = nr;
+    double count_nr[] = {2, 2, 1};
+    net.count_nr = count_nr;
 
-    double weight[] = {1, 2, 2};
-    net.count_weight = weight;
+    double count_weight[] = {1, 2, 2};
+    net.count_weight = count_weight;
 
     double bias[5] = {0, 0, 0, 0, 0};
     net.bias = bias;
@@ -71,14 +72,22 @@ int main(){
 
     }
 
+    size_t testIndex = 0;
+    size_t testMaxCount = sizeof(expectedResults) / sizeof(expectedResults[0]);
+
     /********************************/
     /********* PROPAGATION **********/
     /********************************/
 
+    for (size_t i = 0; i < 8; i++) {
+    
+        
 
-     /********************************/
-     /******* BACKPROPAGATION ********/
-     /********************************/
+    }
+
+    /********************************/
+    /******* BACKPROPAGATION ********/
+    /********************************/
  
 }
 
