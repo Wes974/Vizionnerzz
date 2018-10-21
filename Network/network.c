@@ -122,7 +122,6 @@ int main(){
 
 void forwardPropagation(Network net) {
 
-
     printf("\nBegin forward propagation\n");
 
     // Hidden Layer
@@ -159,7 +158,6 @@ void forwardPropagation(Network net) {
     net.computed[4] = activatedOut;
 
 }
-
 
     /********************************/
     /********** UTILITIES ***********/
