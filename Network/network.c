@@ -29,7 +29,7 @@ int main(){
 
     net.computed = calloc(5, sizeof(double));
 
-    double weights[5] = {1, 1, 1, 1, 1};
+    double weights[6] = {1, 1, 1, 1, 1, 1};
 
     for (size_t i = 0; i < 5; i++) {
 
@@ -165,11 +165,10 @@ void forwardPropagation(Network net) {
 
     // Hidden Layer
     
-    int comp = 0, weig = 0;
-    for (int i = 0; i < net.count_nr[1]; i++, comp++) {
+    for (int i = 0; i < net.count_nr[1]; i++) {
         double sum = 0.0;
-        for (int j = 0; j < net.count_weight[0]; j++, weig++) {
-            sum += net.computed[j] * net.weights[i + j];
+        for (int j = 0; j < net.count_weight[0]; j++) {
+            sum += net.computed[j] * net.weights[i * net.count_weight[0] + j];
         }
         net.computed[net.count_nr[0] + i] = sigmoid(sum);
     }
@@ -192,12 +191,12 @@ void forwardPropagation(Network net) {
 
     // Output Layer
     
-    for (int i = net.count_nr[1]; i < net.count_nr[1] + net.count_nr[2]; i++) {
+    for (int i = 0; i < net.count_nr[2]; i++) {
         double sum = 0.0;
-        for (int j = net.count_weight[0]; j < net.count_weight[0] + net.count_weight[1]; j++) {
-            sum += net.computed[j] * net.weights[i + j];
+        for (int j = 0; j < net.count_weight[1]; j++) {
+            sum += net.computed[net.count_nr[0] + j] * net.weights[net.count_weight[0] * net.count_nr[1] + i * net.count_weight[1] + j];
         }
-        net.computed[net.count_nr[0] + i] = sigmoid(sum);
+        net.computed[net.count_nr[0] + net.count_nr[1] + i] = sigmoid(sum);
     }
     
     /*double outH1 = 0.0;
