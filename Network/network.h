@@ -14,8 +14,8 @@ struct Network {
     double *computed;       // Computed values array
     double *weights;        // Weights array
     double *bias;           // Biases array
-    double *count_nr;       // Neuron count by layer array
-    double *count_weight;   // Weights count by neuron by layer array
+    int *count_nr;       // Neuron count by layer array
+    int *count_weight;   // Weights count by neuron by layer array
  
 };
 

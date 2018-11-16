@@ -29,9 +29,9 @@ int main(){
 
     net.computed = calloc(5, sizeof(double));
 
-    double weights[8] = {1, 1, 1, 1, 1, 1, 1, 1};
+    double weights[5] = {1, 1, 1, 1, 1};
 
-    for (size_t i = 2; i < 8; i++) {
+    for (size_t i = 0; i < 5; i++) {
 
         double r = (double)rand() / (double)(RAND_MAX / 5);
         weights[i] = r;
@@ -40,13 +40,13 @@ int main(){
 
     net.weights = weights;
 
-    double count_nr[] = {2, 2, 1};
+    int count_nr[] = {2, 2, 1};
     net.count_nr = count_nr;
 
-    double count_weight[] = {1, 2, 2};
+    int count_weight[] = {2, 2};
     net.count_weight = count_weight;
 
-    double bias[5] = {0, 0, 0, 0, 0};
+    double bias[3] = {0, 0, 0};
     net.bias = bias;
 
 
@@ -164,7 +164,17 @@ int main(){
 void forwardPropagation(Network net) {
 
     // Hidden Layer
-    double netH1 = 0.0, netH2 = 0.0;
+    
+    int comp = 0, weig = 0;
+    for (int i = 0; i < net.count_nr[1]; i++, comp++) {
+        double sum = 0.0;
+        for (int j = 0; j < net.count_weight[0]; j++, weig++) {
+            sum += net.computed[j] * net.weights[i + j];
+        }
+        net.computed[net.count_nr[0] + i] = sigmoid(sum);
+    }
+    
+    /*double netH1 = 0.0, netH2 = 0.0;
 
     // H1 Processing
     netH1 = net.weights[2] * net.computed[0] + net.weights[3] * net.computed[1]
@@ -178,10 +188,19 @@ void forwardPropagation(Network net) {
     double activatedH1 = sigmoid(netH1), activatedH2 = sigmoid(netH2);
 
     net.computed[2] = activatedH1;
-    net.computed[3] = activatedH2;
+    net.computed[3] = activatedH2;*/
 
     // Output Layer
-    double outH1 = 0.0;
+    
+    for (int i = net.count_nr[1]; i < net.count_nr[1] + net.count_nr[2]; i++) {
+        double sum = 0.0;
+        for (int j = net.count_weight[0]; j < net.count_weight[0] + net.count_weight[1]; j++) {
+            sum += net.computed[j] * net.weights[i + j];
+        }
+        net.computed[net.count_nr[0] + i] = sigmoid(sum);
+    }
+    
+    /*double outH1 = 0.0;
 
     // Out Processing
     outH1 = net.weights[6] * activatedH1 + net.weights[7] * activatedH2 
@@ -190,7 +209,7 @@ void forwardPropagation(Network net) {
     // Sigmoid
     double activatedOut = sigmoid(outH1);
 
-    net.computed[4] = activatedOut;
+    net.computed[4] = activatedOut;*/
 
 }
 
