@@ -31,7 +31,7 @@ int main(){
 
     double weights[6] = {1, 1, 1, 1, 1, 1};
 
-    for (size_t i = 0; i < 5; i++) {
+    for (size_t i = 0; i < 6; i++) {
 
         double r = (double)rand() / (double)(RAND_MAX / 5);
         weights[i] = r;
@@ -69,6 +69,17 @@ int main(){
     //          [i -> 0, i -> 1, 0 -> 2, 0 -> 3, 1 -> 2, 1 -> 3, 2 -> 4, 3 -> 4]
 
 
+    net.computed[0] = 1;
+    net.computed[1] = 1;
+    double w[6] = {1.0, -1.0, -1.0, 1.0, 1.0, 1.0};
+    net.weights = w;
+
+    forwardPropagation(net);
+    printf("prop(1,1) = %f\n", net.computed[4]);
+    net.computed[1] = 0;
+    forwardPropagation(net);
+    printf("prop(1,0) = %f\n", net.computed[4]);
+
     size_t iter = 10000000;
     for (size_t i = 0; i < iter; i++) {
         for (size_t testIndex = 0; testIndex < testMaxCount; testIndex++) {
@@ -85,7 +96,9 @@ int main(){
     /******* BACKPROPAGATION ********/
     /********************************/
 
-            // 1 - Output error
+            backPropagation(net, expectedResults[testIndex], trainingStep);
+
+            /*// 1 - Output error
 
             double outputError = expectedResults[testIndex] - net.computed[4];
 
@@ -126,7 +139,7 @@ int main(){
             for (size_t j = 2; j < 5; j++) {
                 net.bias[j] += newBias[j];
                 newBias[j] = 0;
-            }
+            }*/
         }
 
     }
@@ -172,22 +185,6 @@ void forwardPropagation(Network net) {
         }
         net.computed[net.count_nr[0] + i] = sigmoid(sum);
     }
-    
-    /*double netH1 = 0.0, netH2 = 0.0;
-
-    // H1 Processing
-    netH1 = net.weights[2] * net.computed[0] + net.weights[3] * net.computed[1]
-        + net.bias[2] * 1;
-
-    // H2 Processing
-    netH2 = net.weights[4] * net.computed[0] + net.weights[5] *net.computed[1]
-        + net.bias[3] * 1;
-
-    // Sigmoid
-    double activatedH1 = sigmoid(netH1), activatedH2 = sigmoid(netH2);
-
-    net.computed[2] = activatedH1;
-    net.computed[3] = activatedH2;*/
 
     // Output Layer
     
@@ -198,18 +195,58 @@ void forwardPropagation(Network net) {
         }
         net.computed[net.count_nr[0] + net.count_nr[1] + i] = sigmoid(sum);
     }
+}
+
+    /********************************/
+    /******* BACKPROPAGATION ********/
+    /********************************/
+
+void backPropagation(Network net, double expectedResults[], double trainingStep) {
+    double newWeights[net.count_weight[0] * net.count_nr[1] + net.count_weight[1] * net.count_nr[2]];
+    double newBias[net.count_nr[1] + net.count_nr[2]];
     
-    /*double outH1 = 0.0;
+    // 1 - Output error
 
-    // Out Processing
-    outH1 = net.weights[6] * activatedH1 + net.weights[7] * activatedH2 
-        + net.bias[4] * 1;
+    double outputError = expectedResult - net.computed[4];
 
-    // Sigmoid
-    double activatedOut = sigmoid(outH1);
+    // 2 - Output weights
+    double w3 = trainingStep * outputError * net.computed[3] *
+        (1 - net.computed[4]) * net.computed[4];
+    double w2 = trainingStep * outputError * net.computed[2] *
+        (1 - net.computed[4]) * net.computed[4];
 
-    net.computed[4] = activatedOut;*/
+    newWeights[7] += w3;
+    newWeights[6] += w2;
+    newBias[4] += trainingStep * outputError * net.computed[4] * 
+        (1 - net.computed[4]);
 
+    // 3 - Hidden layer errors
+    double hidden3Error = outputError * net.weights[7];
+    double hidden2Error = outputError * net.weights[6];
+
+    // 4 - Hidden layer weight
+    newWeights[5] += trainingStep * hidden3Error * net.computed[3] * 
+        (1 - net.computed[3]) * net.computed[1];
+    newWeights[4] += trainingStep * hidden3Error * net.computed[3] *
+        (1 - net.computed[3]) * net.computed[0];
+    newBias[3] += trainingStep * hidden3Error * net.computed[3] *
+        (1 - net.computed[3]);
+
+    newWeights[3] += trainingStep * hidden2Error * net.computed[2] *
+        (1 - net.computed[2]) * net.computed[1];
+    newWeights[2] += trainingStep * hidden2Error * net.computed[2] *
+        (1 - net.computed[2]) * net.computed[0];
+    newBias[2] += trainingStep * hidden2Error * net.computed[2] *
+        (1 - net.computed[2]);
+
+    for (size_t j = 2; j < 8; j++) {
+        net.weights[j] += newWeights[j];
+        newWeights[j] = 0;
+    }
+    for (size_t j = 2; j < 5; j++) {
+        net.bias[j] += newBias[j];
+        newBias[j] = 0;
+    }
 }
 
     /********************************/
