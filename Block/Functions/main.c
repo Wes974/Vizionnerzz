@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "wordSegmentation.h"
 #include "lineSegmentation.h"
 #include "charSegmentation.h"
@@ -12,6 +14,13 @@ int main(){
 
     unsigned int width = 5;
     unsigned int height = 3;
+    
+    FILE *fp;
+    fp = fopen("./data/", "r");
+    if(fp == NULL){
+        mkdir("./data/", 0700);
+    }
+    fclose(fp);
 
     //LINE//
     
@@ -51,16 +60,16 @@ int main(){
     }
 
     */
-
+    /*
     unsigned int * listWord = matrixToListLine(matrixPicture, height, width);
     unsigned int threshold = thresholdDefine(listWord, width);
 
     unsigned int numberOfWord = wordSave(threshold, listWord, matrixPicture, width, height, numberOfLine);
-
+    
     //CHAR//
  
     unsigned int * charLines = matrixToListLine(matrixPicture, height, width); 
     unsigned int charNumber = charSave(charLines, matrixPicture, width, height, numberOfLine, numberOfWord);
-
+    */
     return 0;
 }
