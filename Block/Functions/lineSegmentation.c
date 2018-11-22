@@ -34,7 +34,6 @@ void cutLine(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
         sprintf(directoryname, "./data/line_%i/", numberOfLine);
         mkdir(directoryname, 0700);
         fp = fopen(filename, "w");
-        printf("nop");
     }
     
     for(unsigned int j = 0; j < width; j++){
@@ -56,6 +55,7 @@ unsigned int lineSave(unsigned int list[], unsigned int matrix[], unsigned int w
     unsigned int pos2 = 1;
     unsigned int inALine = 0;
     unsigned int numberOfLine = 0;
+    
     for(unsigned int k = 0; k < height; k++){
         if(list[k] == 1 && !inALine){
             inALine = 1;
