@@ -8,14 +8,14 @@ unsigned int * matrixToListLine(unsigned int matrix[], unsigned int height, unsi
 
     unsigned int *list = calloc(width, sizeof(unsigned int));
 
-    for(unsigned int j = 0; j < height; j++){
+    for(unsigned int i = 0; i < height; i++){
         unsigned int value = 0;
-        for (unsigned int i = 0; i < width; i++){
+        for (unsigned int j = 0; j < width; j++){
             if(matrix[i*width+j] == 1){
                 value = 1;
             }
         }
-        list[j] = value;
+        list[i] = value;
     }
     
     return list;
@@ -35,9 +35,9 @@ void cutLine(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
         mkdir(directoryname, 0700);
         fp = fopen(filename, "w");
     }
-    
-    for(unsigned int j = 0; j < width; j++){
-        for(unsigned int i = pos1; i < pos2; i++){
+
+    for(unsigned int i = pos1; i < pos2; i++){
+        for(unsigned int j = 0; j < width; j++){
             fputc(matrix[i*width+j] + 48, fp);
         }
     }
@@ -77,7 +77,7 @@ unsigned int lineSave(unsigned int list[], unsigned int matrix[], unsigned int w
         }
     }
     if(inALine){
-        cutLine(pos1, pos2, matrix, width, height, numberOfLine);
+        cutLine(pos1, pos2 + 1, matrix, width, height, numberOfLine);
         numberOfLine++;
     }
     return numberOfLine;
