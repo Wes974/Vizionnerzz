@@ -70,26 +70,34 @@ void cutWord(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
 }
 
 unsigned int wordSave(unsigned int threshold, unsigned int list[], unsigned int matrix[], unsigned int width, unsigned int height, unsigned int lineNumber){
-    unsigned int pos1 = -1;
-    unsigned int pos2 = 0;
+    unsigned int pos1 = 0;
+    unsigned int pos2 = 1;
     unsigned int inAWord = 0;
     unsigned int numberOfWords = 0;
+
     for(unsigned int k = 0; k < width; k++){
-        
-        if(list[k] == 1){
+        if(list[k] == 1 && !inAWord){
             inAWord = 1;
-            pos2 = k;
+            pos1 = k;
+        }
+        else if (list[k] == 1){
+            inAWord = 1;
+            pos2 = k; 
         }
         
-        if(list[k] == 0 && inAWord && pos2 - pos1 >= threshold){
-            cutWord(pos1 + 1, pos2 + 1, matrix, width, height, numberOfWords, lineNumber);
+        else if(list[k] == 0 && inAWord && pos2 - pos1 >= threshold){
+            cutWord(pos1, pos2, matrix, width, height, numberOfWords, lineNumber);
             numberOfWords++;
-            pos1 = k;
-        }
-        else if(list[k] == 0){
-            pos1 = k;
             inAWord = 0;
         }
+        else if(list[k] == 0){
+            inAWord = 0;
+        }
+    }
+    printf("%u, %u\n", pos1, pos2);
+    if(inAWord){
+        cutWord(pos1, pos2 + 1, matrix, width, height, numberOfWords, lineNumber);
+        numberOfWords++;
     }
     return numberOfWords;
 }

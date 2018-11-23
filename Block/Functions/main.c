@@ -37,6 +37,7 @@ int main(){
     //WORD//
 
     for(unsigned int i = 0; i < numberOfLine; i++){
+        //GET MATRIX LINE//
         FILE *lineFile;
         char lineFilename[255];
         sprintf(lineFilename, "./data/line_%i/line_%i.txt", i, i);
@@ -56,13 +57,13 @@ int main(){
         sscanf(lineHeight, "%d", &lineHeightNumber);
 
         printf("Line number %u :\n", i);
-        for (unsigned int i = 0; i < lineHeightNumber; i++){
-            for (unsigned int j = 0; j < width; j++){
-                printf("%u ", lineMatrix[i*width+j]);
+        for (unsigned int j = 0; j < lineHeightNumber; j++){
+            for (unsigned int k = 0; k < width; k++){
+                printf("%u ", lineMatrix[j*width+k]);
             }
             printf("\n");
         }
-
+        //WORD SEGMENTATION
         unsigned int * listWords = matrixToListWord(lineMatrix, lineHeightNumber, width);
 
         printf("\n");
@@ -71,8 +72,39 @@ int main(){
         }
         printf("\n");
         unsigned int threshold = thresholdDefine(listWords, width);
-        printf("Threshold = %u\n", threshold);
-        wordSave(threshold, listWords, lineMatrix, width, lineHeightNumber, i);
+        printf("Threshold = %u\n\n", threshold);
+        unsigned int numberOfWord = wordSave(threshold, listWords, lineMatrix, width, lineHeightNumber, i);
+        free(lineMatrix);
+        
+        for(unsigned int j = 0; j < numberOfWord; j++){
+            //GET MATRIX WORD//
+            FILE *wordFile;
+            char wordFilename[255];
+            sprintf(wordFilename, "./data/line_%i/word_%i/word_%i.txt", i, j, j);
+            wordFile = fopen(wordFilename, "r");
+            char wordMatrixChar[255];
+            fscanf(wordFile, "%s", wordMatrixChar);
+            
+            unsigned int *wordMatrix = calloc(255, sizeof(unsigned int));
+            unsigned int *q =wordMatrix;
+            for (unsigned int k = 0; k < 255; k++){
+                *q = wordMatrixChar[k] - 48;
+                q++;
+            }
+            char wordWidth[25];
+            fscanf(wordFile, "%s", wordWidth);
+            unsigned int wordWidthNumber;
+            sscanf(wordWidth, "%d", &wordWidthNumber);
+
+            printf("Word number %u :\n", j);
+            for (unsigned int k = 0; k < lineHeightNumber; k++){
+                for (unsigned int l = 0; l < wordWidthNumber; l++){
+                    printf("%u ", wordMatrix[k*width+l]);
+                }
+                printf("\n");
+            }
+            fclose(wordFile);
+        }
         fclose(lineFile);
     }
 
