@@ -21,6 +21,8 @@ SDL_Surface* load_image(char *path)
     return img;
 }
 
+//Get info on the pixel positionned at x,y coordinates
+
 Uint32 get_pixel(SDL_Surface *surface, unsigned x, unsigned y)
 {
     Uint8 *p = pixel_ref(surface, x, y);
@@ -45,6 +47,8 @@ Uint32 get_pixel(SDL_Surface *surface, unsigned x, unsigned y)
 
     return 0;
 }
+
+//Replace the pixel positionned at x,y coordinates by pixel
 
 void put_pixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel)
 {
