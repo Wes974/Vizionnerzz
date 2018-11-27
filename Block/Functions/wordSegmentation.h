@@ -9,6 +9,7 @@ void cutWord(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
 
 unsigned int wordSave(unsigned int threshold, unsigned int list[], unsigned int matrix[], unsigned int width, unsigned int heigth, unsigned int lineNumber);
 
-
+unsigned int *matrixWordSpace(unsigned int list[], unsigned int threshold, unsigned int width, unsigned int height);
 
 #endif
+

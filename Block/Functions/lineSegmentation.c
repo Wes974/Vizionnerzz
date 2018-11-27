@@ -4,8 +4,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-unsigned int * matrixToListLine(unsigned int matrix[], unsigned int height, unsigned int width) {             //Convert a 2 dimensional matrix into a 1 dimensional List.
-
+unsigned int * matrixToListLine(unsigned int matrix[], unsigned int height, unsigned int width) {
     unsigned int *list = calloc(width, sizeof(unsigned int));
 
     for(unsigned int i = 0; i < height; i++){
@@ -16,8 +15,7 @@ unsigned int * matrixToListLine(unsigned int matrix[], unsigned int height, unsi
             }
         }
         list[i] = value;
-    }
-    
+    } 
     return list;
 }
 
@@ -42,6 +40,7 @@ void cutLine(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
         }
     }
     fprintf(fp, " ");
+    height = pos2 - pos1;
     while (height > 0){
         fputc(height % 10 + 48, fp);
         height /= 10;
@@ -68,6 +67,7 @@ unsigned int lineSave(unsigned int list[], unsigned int matrix[], unsigned int w
         
         else if(list[k] == 0 && inALine){
             pos2 = k;
+            printf("cultine : %u, %u\n", pos1, pos2);
             cutLine(pos1, pos2, matrix, width, height, numberOfLine);
             numberOfLine++;
             inALine = 0;
@@ -77,7 +77,8 @@ unsigned int lineSave(unsigned int list[], unsigned int matrix[], unsigned int w
         }
     }
     if(inALine){
-        cutLine(pos1, pos2 + 1, matrix, width, height, numberOfLine);
+        printf("cultine : %u, %u\n", pos1, pos2);
+        cutLine(pos1, height, matrix, width, height, numberOfLine);
         numberOfLine++;
     }
     return numberOfLine;

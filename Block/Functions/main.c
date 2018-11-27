@@ -10,9 +10,9 @@
 
 int main(){
     //EXAMPLE//
-    unsigned int matrixPicture[3*5] = {1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0}; 
+    unsigned int matrixPicture[3*7] = {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1};
 
-    unsigned int width = 5;
+    unsigned int width = 7;
     unsigned int height = 3;
     
     if(mkdir("./data",0700 && errno != EEXIST)){
@@ -55,6 +55,8 @@ int main(){
         fscanf(lineFile, "%s", lineHeight);
         unsigned int lineHeightNumber;
         sscanf(lineHeight, "%d", &lineHeightNumber);
+        
+        //printf("lineHeight = %u\n", lineHeightNumber);
 
         printf("Line number %u :\n", i);
         for (unsigned int j = 0; j < lineHeightNumber; j++){
@@ -64,16 +66,18 @@ int main(){
             printf("\n");
         }
         //WORD SEGMENTATION
-        unsigned int * listWords = matrixToListWord(lineMatrix, lineHeightNumber, width);
+        unsigned int * listWordsV1 = matrixToListWord(lineMatrix, lineHeightNumber, width);
+        unsigned int threshold = thresholdDefine(listWordsV1, width);
+        unsigned int * listWords = matrixWordSpace(listWordsV1, threshold, width, lineHeightNumber);
 
         printf("\n");
         for (unsigned int j = 0; j < width; j++){
-            printf("%u ", listWords[j]);
+            printf("%u ", listWordsV1[j]);
         }
         printf("\n");
-        unsigned int threshold = thresholdDefine(listWords, width);
+
         printf("Threshold = %u\n\n", threshold);
-        unsigned int numberOfWord = wordSave(threshold, listWords, lineMatrix, width, lineHeightNumber, i);
+        unsigned int numberOfWord = wordSave(threshold, listWordsV1, lineMatrix, width, lineHeightNumber, i);
         free(lineMatrix);
         
         for(unsigned int j = 0; j < numberOfWord; j++){
@@ -96,29 +100,60 @@ int main(){
             unsigned int wordWidthNumber;
             sscanf(wordWidth, "%d", &wordWidthNumber);
 
-            printf("Word number %u :\n", j);
+
+
+            printf("Word number %u \n", j);
             for (unsigned int k = 0; k < lineHeightNumber; k++){
                 for (unsigned int l = 0; l < wordWidthNumber; l++){
-                    printf("%u ", wordMatrix[k*width+l]);
+                    printf("%u ", wordMatrix[k*wordWidthNumber+l]);
                 }
                 printf("\n");
             }
+
+            //CHAR SEGMENTATION
+            unsigned int * listChar = matrixToListChar(wordMatrix, lineHeightNumber, wordWidthNumber);
+
+            unsigned int numberOfChar = charSave(listChar, wordMatrix, wordWidthNumber, lineHeightNumber, i, j);
+
+            for (unsigned int k = 0; k < numberOfChar; k++){
+                //GET CHAR
+                FILE *charFile;
+                char charFilename[255];
+                sprintf(charFilename, "./data/line_%i/word_%i/char_%i.txt", i, j, k);
+                charFile = fopen(charFilename, "r");
+                char charMatrixChar[255];
+                fscanf(charFile, "%s", charMatrixChar);
+                
+                unsigned int *charMatrix = calloc(255, sizeof(unsigned int));
+                unsigned int *q =charMatrix;
+                for (unsigned int k = 0; k < 255; k++){
+                    *q = charMatrixChar[k] - 48;
+                    q++;
+                }
+                char charWidth[25];
+                fscanf(charFile, "%s", charWidth);
+                unsigned int charWidthNumber;
+                sscanf(charWidth, "%d", &charWidthNumber);
+
+
+
+                printf("Char number %u \n", k);
+                for (unsigned int k = 0; k < lineHeightNumber; k++){
+                    for (unsigned int l = 0; l < charWidthNumber; l++){
+                        printf("%u ", charMatrix[k*charWidthNumber+l]);
+                    }
+                    printf("\n");
+                }
+                free(charMatrix);
+                fclose(charFile);
+            }
+            free(wordMatrix);
             fclose(wordFile);
+            remove(wordFilename);
         }
         fclose(lineFile);
+        remove(lineFilename);
     }
 
-    
-    /*
-    unsigned int * listWord = matrixToListLine(matrixPicture, height, width);
-    unsigned int threshold = thresholdDefine(listWord, width);
-
-    unsigned int numberOfWord = wordSave(threshold, listWord, matrixPicture, width, height, numberOfLine);
-    
-    //CHAR//
- 
-    unsigned int * charLines = matrixToListLine(matrixPicture, height, width); 
-    unsigned int charNumber = charSave(charLines, matrixPicture, width, height, numberOfLine, numberOfWord);
-    */
     return 0;
 }
