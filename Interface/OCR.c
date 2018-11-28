@@ -5,6 +5,7 @@ typedef struct
 {
     GtkBuilder *builder;
     gpointer user_data;
+    GtkWidget *currentWindow;
 } SGlobalData;
 
 int main(int argc, char *argv [])
@@ -57,11 +58,18 @@ int main(int argc, char *argv [])
 void callback_close (GtkMenuItem *menuitem, gpointer user_data)
 {
     SGlobalData *data = (SGlobalData*) user_data;
-    GtkWidget *fileSelector = NULL;
+    //GtkWidget *fileSelector = NULL;
 
-    fileSelector = GTK_WIDGET (gtk_builder_get_object (data->builder, "FileSelector"));
+    data->currentWindow = GTK_WIDGET (gtk_builder_get_object (data->builder, "FileSelector"));
 
-    gtk_dialog_run (GTK_DIALOG (fileSelector));
+    //gtk_dialog_run (GTK_DIALOG (fileSelector));
 
-    gtk_widget_hide(fileSelector);
+    gtk_widget_show(data->currentWindow);
+}
+
+void callback_cancel (GtkMenuItem *menuitem, gpointer user_data)
+{
+    SGlobalData *data = (SGlobalData*) user_data;
+
+    gtk_widget_hide(data->currentWindow);
 }

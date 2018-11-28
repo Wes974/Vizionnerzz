@@ -37,6 +37,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="callback_close" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -219,6 +220,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="callback_cancel" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
