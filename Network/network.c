@@ -23,11 +23,12 @@ int main(){
     /********* NETWORK INIT *********/
     /********************************/
 
-    srand(3);
+    srand(time(NULL));
 
-    Network net;
+    Network n;
+    Network *net = &n;
 
-    net.computed = calloc(5, sizeof(double));
+    net->computed = calloc(5, sizeof(double));
 
     double weights[8] = {1, 1, 1, 1, 1, 1, 1, 1};
 
@@ -38,16 +39,16 @@ int main(){
 
     }
 
-    net.weights = weights;
+    net->weights = weights;
 
     double count_nr[] = {2, 2, 1};
-    net.count_nr = count_nr;
+    net->count_nr = count_nr;
 
     double count_weight[] = {1, 2, 2};
-    net.count_weight = count_weight;
+    net->count_weight = count_weight;
 
     double bias[5] = {0, 0, 0, 0, 0};
-    net.bias = bias;
+    net->bias = bias;
 
 
     /********************************/
@@ -72,8 +73,8 @@ int main(){
     size_t iter = 10000000;
     for (size_t i = 0; i < iter; i++) {
         for (size_t testIndex = 0; testIndex < testMaxCount; testIndex++) {
-            net.computed[0] = trainingSet[2 * testIndex];
-            net.computed[1] = trainingSet[2 * testIndex + 1];
+            net->computed[0] = trainingSet[2 * testIndex];
+            net->computed[1] = trainingSet[2 * testIndex + 1];
 
     /********************************/
     /********* PROPAGATION **********/
@@ -87,44 +88,44 @@ int main(){
 
             // 1 - Output error
 
-            double outputError = expectedResults[testIndex] - net.computed[4];
+            double outputError = expectedResults[testIndex] - net->computed[4];
 
             // 2 - Output weights
-            double w3 = trainingStep * outputError * net.computed[3] *
-                (1 - net.computed[4]) * net.computed[4];
-            double w2 = trainingStep * outputError * net.computed[2] *
-                (1 - net.computed[4]) * net.computed[4];
+            double w3 = trainingStep * outputError * net->computed[3] *
+                (1 - net->computed[4]) * net->computed[4];
+            double w2 = trainingStep * outputError * net->computed[2] *
+                (1 - net->computed[4]) * net->computed[4];
 
             newWeights[7] += w3;
             newWeights[6] += w2;
-            newBias[4] += trainingStep * outputError * net.computed[4] * 
-                (1 - net.computed[4]);
+            newBias[4] += trainingStep * outputError * net->computed[4] * 
+                (1 - net->computed[4]);
 
             // 3 - Hidden layer errors
-            double hidden3Error = outputError * net.weights[7];
-            double hidden2Error = outputError * net.weights[6];
+            double hidden3Error = outputError * net->weights[7];
+            double hidden2Error = outputError * net->weights[6];
 
             // 4 - Hidden layer weight
-            newWeights[5] += trainingStep * hidden3Error * net.computed[3] * 
-                (1 - net.computed[3]) * net.computed[1];
-            newWeights[4] += trainingStep * hidden3Error * net.computed[3] *
-                (1 - net.computed[3]) * net.computed[0];
-            newBias[3] += trainingStep * hidden3Error * net.computed[3] *
-                (1 - net.computed[3]);
+            newWeights[5] += trainingStep * hidden3Error * net->computed[3] * 
+                (1 - net->computed[3]) * net->computed[1];
+            newWeights[4] += trainingStep * hidden3Error * net->computed[3] *
+                (1 - net->computed[3]) * net->computed[0];
+            newBias[3] += trainingStep * hidden3Error * net->computed[3] *
+                (1 - net->computed[3]);
 
-            newWeights[3] += trainingStep * hidden2Error * net.computed[2] *
-                (1 - net.computed[2]) * net.computed[1];
-            newWeights[2] += trainingStep * hidden2Error * net.computed[2] *
-                (1 - net.computed[2]) * net.computed[0];
-            newBias[2] += trainingStep * hidden2Error * net.computed[2] *
-                (1 - net.computed[2]);
+            newWeights[3] += trainingStep * hidden2Error * net->computed[2] *
+                (1 - net->computed[2]) * net->computed[1];
+            newWeights[2] += trainingStep * hidden2Error * net->computed[2] *
+                (1 - net->computed[2]) * net->computed[0];
+            newBias[2] += trainingStep * hidden2Error * net->computed[2] *
+                (1 - net->computed[2]);
 
             for (size_t j = 2; j < 8; j++) {
-                net.weights[j] += newWeights[j];
+                net->weights[j] += newWeights[j];
                 newWeights[j] = 0;
             }
             for (size_t j = 2; j < 5; j++) {
-                net.bias[j] += newBias[j];
+                net->bias[j] += newBias[j];
                 newBias[j] = 0;
             }
         }
@@ -135,25 +136,25 @@ int main(){
     /********* FINAL TESTS **********/
     /********************************/
 
-    net.computed[0] = 0;
-    net.computed[1] = 0;
+    net->computed[0] = 0;
+    net->computed[1] = 0;
     forwardPropagation(net);
-    printf("(0, 0) = %f\n", net.computed[4]);
+    printf("(0, 0) = %f\n", net->computed[4]);
 
-    net.computed[0] = 0;
-    net.computed[1] = 1;
+    net->computed[0] = 0;
+    net->computed[1] = 1;
     forwardPropagation(net);
-    printf("(0, 1) = %f\n", net.computed[4]);
+    printf("(0, 1) = %f\n", net->computed[4]);
 
-    net.computed[0] = 1;
-    net.computed[1] = 0;
+    net->computed[0] = 1;
+    net->computed[1] = 0;
     forwardPropagation(net);
-    printf("(1, 0) = %f\n", net.computed[4]);
+    printf("(1, 0) = %f\n", net->computed[4]);
 
-    net.computed[0] = 1;
-    net.computed[1] = 1;
+    net->computed[0] = 1;
+    net->computed[1] = 1;
     forwardPropagation(net);
-    printf("(1, 1) = %f\n", net.computed[4]);
+    printf("(1, 1) = %f\n", net->computed[4]);
 }
 
 
@@ -161,36 +162,36 @@ int main(){
     /* Forward Propagation function */
     /********************************/
 
-void forwardPropagation(Network net) {
+void forwardPropagation(Network * net) {
 
     // Hidden Layer
     double netH1 = 0.0, netH2 = 0.0;
 
     // H1 Processing
-    netH1 = net.weights[2] * net.computed[0] + net.weights[3] * net.computed[1]
-        + net.bias[2] * 1;
+    netH1 = net->weights[2] * net->computed[0] + net->weights[3] * net->computed[1]
+        + net->bias[2] * 1;
 
     // H2 Processing
-    netH2 = net.weights[4] * net.computed[0] + net.weights[5] *net.computed[1]
-        + net.bias[3] * 1;
+    netH2 = net->weights[4] * net->computed[0] + net->weights[5] *net->computed[1]
+        + net->bias[3] * 1;
 
     // Sigmoid
     double activatedH1 = sigmoid(netH1), activatedH2 = sigmoid(netH2);
 
-    net.computed[2] = activatedH1;
-    net.computed[3] = activatedH2;
+    net->computed[2] = activatedH1;
+    net->computed[3] = activatedH2;
 
     // Output Layer
     double outH1 = 0.0;
 
     // Out Processing
-    outH1 = net.weights[6] * activatedH1 + net.weights[7] * activatedH2 
-        + net.bias[4] * 1;
+    outH1 = net->weights[6] * activatedH1 + net->weights[7] * activatedH2 
+        + net->bias[4] * 1;
 
     // Sigmoid
     double activatedOut = sigmoid(outH1);
 
-    net.computed[4] = activatedOut;
+    net->computed[4] = activatedOut;
 
 }
 
