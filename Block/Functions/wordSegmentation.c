@@ -71,7 +71,7 @@ void cutWord(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
     fclose(fp);
 }
 
-unsigned int wordSave(unsigned int threshold, unsigned int list[], unsigned int matrix[], unsigned int width, unsigned int height, unsigned int lineNumber){
+unsigned int wordSave(unsigned int list[], unsigned int matrix[], unsigned int width, unsigned int height, unsigned int lineNumber){
     unsigned int pos1 = 0;
     unsigned int pos2 = 1;
     unsigned int inAWord = 0;
@@ -104,7 +104,7 @@ unsigned int wordSave(unsigned int threshold, unsigned int list[], unsigned int 
     return numberOfWords;
 }
 
-unsigned int *matrixWordSpace(unsigned int list[], unsigned int threshold, unsigned int width, unsigned int height){
+unsigned int *matrixWordSpace(unsigned int list[], unsigned int threshold, unsigned int width){
     
     unsigned int lastWord = 0;
     unsigned int firstLetter = 0;

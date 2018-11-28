@@ -10,7 +10,7 @@
 
 int main(){
     //EXAMPLE//
-    unsigned int matrixPicture[3*7] = {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1};
+    unsigned int matrixPicture[3*7] = {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0};
 
     unsigned int width = 7;
     unsigned int height = 3;
@@ -18,7 +18,9 @@ int main(){
     if(mkdir("./data",0700 && errno != EEXIST)){
         mkdir("./data/", 0700);
     }
-
+    system("cd data");
+    system("rm test");
+    system("cd ..");
     printf("Original Image :\n");
     for (unsigned int i = 0; i < height; i++){
         for (unsigned int j = 0; j < width; j++){
@@ -68,16 +70,16 @@ int main(){
         //WORD SEGMENTATION
         unsigned int * listWordsV1 = matrixToListWord(lineMatrix, lineHeightNumber, width);
         unsigned int threshold = thresholdDefine(listWordsV1, width);
-        unsigned int * listWords = matrixWordSpace(listWordsV1, threshold, width, lineHeightNumber);
+        unsigned int * listWords = matrixWordSpace(listWordsV1, threshold, width);
 
         printf("\n");
         for (unsigned int j = 0; j < width; j++){
-            printf("%u ", listWordsV1[j]);
+            printf("%u ", listWords[j]);
         }
         printf("\n");
 
         printf("Threshold = %u\n\n", threshold);
-        unsigned int numberOfWord = wordSave(threshold, listWordsV1, lineMatrix, width, lineHeightNumber, i);
+        unsigned int numberOfWord = wordSave(listWordsV1, lineMatrix, width, lineHeightNumber, i);
         free(lineMatrix);
         
         for(unsigned int j = 0; j < numberOfWord; j++){
@@ -154,6 +156,5 @@ int main(){
         fclose(lineFile);
         remove(lineFilename);
     }
-
     return 0;
 }

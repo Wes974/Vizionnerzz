@@ -67,7 +67,7 @@ unsigned int lineSave(unsigned int list[], unsigned int matrix[], unsigned int w
         
         else if(list[k] == 0 && inALine){
             pos2 = k;
-            printf("cultine : %u, %u\n", pos1, pos2);
+            //printf("cultine : %u, %u\n", pos1, pos2);
             cutLine(pos1, pos2, matrix, width, height, numberOfLine);
             numberOfLine++;
             inALine = 0;
@@ -77,7 +77,7 @@ unsigned int lineSave(unsigned int list[], unsigned int matrix[], unsigned int w
         }
     }
     if(inALine){
-        printf("cultine : %u, %u\n", pos1, pos2);
+        //printf("cultine : %u, %u\n", pos1, pos2);
         cutLine(pos1, height, matrix, width, height, numberOfLine);
         numberOfLine++;
     }
