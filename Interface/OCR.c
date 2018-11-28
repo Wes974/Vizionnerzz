@@ -6,6 +6,7 @@ typedef struct
     GtkBuilder *builder;
     gpointer user_data;
     GtkWidget *currentWindow;
+    gint showtime;
 } SGlobalData;
 
 int main(int argc, char *argv [])
@@ -16,6 +17,7 @@ int main(int argc, char *argv [])
     gchar *filename;
     /* Initialisation de la librairie Gtk. */
     gtk_init(&argc, &argv);
+    data.showtime = 0;
 
     /* Ouverture du fichier Glade de la fenêtre principale */
     data.builder = gtk_builder_new();
@@ -61,15 +63,54 @@ void callback_close (GtkMenuItem *menuitem, gpointer user_data)
     //GtkWidget *fileSelector = NULL;
 
     data->currentWindow = GTK_WIDGET (gtk_builder_get_object (data->builder, "FileSelector"));
+    
+    /*GtkFileFilter *filter = gtk_file_filter_new();
+    gtk_file_filter_add_pattern(filter, "*.bmp");
 
-    //gtk_dialog_run (GTK_DIALOG (fileSelector));
+    g_object_set_property(G_OBJECT (data->currentWindow), "filter", filter);*/
 
-    gtk_widget_show(data->currentWindow);
+    gtk_dialog_run (GTK_DIALOG (data->currentWindow));
+
+    gtk_widget_hide(data->currentWindow);
 }
 
-void callback_cancel (GtkMenuItem *menuitem, gpointer user_data)
+void callback_cancel (GtkButton *cancel, gpointer user_data)
 {
     SGlobalData *data = (SGlobalData*) user_data;
 
-    gtk_widget_hide(data->currentWindow);
+    gtk_dialog_response(GTK_DIALOG(data->currentWindow), GTK_RESPONSE_CLOSE);
+}
+
+void callback_image(GtkButton *open, gpointer user_data)
+{
+    SGlobalData *data = (SGlobalData*) user_data;
+
+    const gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(data->currentWindow));
+
+    GtkImage *image = GTK_IMAGE(gtk_builder_get_object(data->builder, "Image"));
+
+    gtk_image_set_from_file(image, filename);
+}
+
+void callback_OCR(GtkButton *Analyze, gpointer user_data)
+{
+    //Do the shit
+}
+
+void callback_about(GtkMenuItem *menuitem, gpointer user_data)
+{
+    SGlobalData *data = (SGlobalData*) user_data;    
+    
+    GtkWidget *about = GTK_WIDGET(gtk_builder_get_object (data->builder, "About"));
+
+    gtk_dialog_run(GTK_DIALOG(about));
+
+    gtk_widget_hide(about);
+}
+
+void callback_su (GtkEntry *version, gpointer user_data)
+{
+    const gchar *versionNb = gtk_entry_get_text(version);
+    printf("Je suis passé\n");
+    printf("%s\n", versionNb);
 }
