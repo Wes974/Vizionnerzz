@@ -35,9 +35,9 @@ void Make_A_File(SDL_Surface* surf, const char* file)
 
 void Print_Array(Uint8 array[], size_t rows, size_t col)
 {
-    for(size_t i = 0; i < col; i++)
+    for(size_t i = 0; i < rows; i++)
     {
-        for(size_t j = 0; j < rows; j++)
+        for(size_t j = 0; j < col; j++)
         {       
             printf("%d ", array[i * rows + j]);
         }

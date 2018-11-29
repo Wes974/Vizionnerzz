@@ -40,6 +40,11 @@ unsigned char otsu_threshold(Uint8 array[], size_t rows, size_t col)
     unsigned long *histo =calloc(256, sizeof(unsigned long));
     create_Histo(array, rows, col, histo);
     
+    for (unsigned int i = 0; i < 256; i++){
+        printf("%lu, ", histo[i]);
+    }
+    printf("\n");
+
     //Variable Initialisation
     Uint8 threshold = 0;
     float var_max = 0, prov_tresh = 0;
@@ -83,16 +88,17 @@ unsigned char otsu_threshold(Uint8 array[], size_t rows, size_t col)
 
 //Return a binarized matrix from a greyscaled matrix
 
-void otsu(Uint8 image[], Uint8 b_image[], size_t rows, size_t col)
+void otsu(Uint8 image[], unsigned int b_image[], size_t rows, size_t col)
 {
     Uint8 threshold = otsu_threshold(image, rows, col);
+    printf("threshold = %u\n", threshold);
     
     for(size_t i = 0; i < rows; i++)
     {
         for(size_t j = 0; j < col; j++)
         {
             if(image[i * col + j] >= threshold)
-                b_image[i * col + j] = 255;
+                b_image[i * col + j] = 1;
             else
                 b_image[i * col + j] = 0;
         }
