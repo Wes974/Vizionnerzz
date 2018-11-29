@@ -17,20 +17,34 @@ unsigned int * matrixToListChar(unsigned int matrix[], unsigned int height, unsi
     return list;
 }
 
-unsigned int * resize(unsigned int * matrix, unsigned int width, unsigned int height, unsigned int newWidth, unsigned int newHeight){
-    unsigned int * newMatrix = calloc(width * height, sizeof(unsigned int));
-    float ratioX = (float) width / newWidth;
-    float ratioY = (float) height / newHeight;
-
-    for (unsigned int i = 0; i < newWidth; i++){
-        for (unsigned int j = 0; j < newHeight; j++){
-            if ((float) i * ratioX == (int) ((float) i * ratioX) && (float) j * ratioY == (int) ((float) j * ratioY)){
-                newMatrix[i*newWidth+j] = matrix[(int) ((float)i * ratioX), (int) ((float)j * ratioY)];
-            }
-            else {
-                //newMatrix[i*newWidth+j] = 
+unsigned int * matrixToListCharTransposed(unsigned int matrix[], unsigned int height, unsigned int width) {
+    unsigned int *list = calloc(height, sizeof(unsigned int));
+    for(unsigned int i = 0; i < height; i++){
+        unsigned int value = 0;
+        for (unsigned int j = 0; j < width; j++){
+            if(matrix[i*width+j] == 1){
+                value = 1;
             }
         }
+        list[i] = value;
+    }
+    return list;
+}
+
+unsigned int * resize(unsigned int * matrix, unsigned int width, unsigned int height, unsigned int newWidth, unsigned int newHeight){
+    unsigned int * newMatrix = calloc(width * height, sizeof(unsigned int));
+    float ratioX = (float) width / (float)newWidth;
+    float ratioY = (float) height / (float)newHeight;
+    unsigned int in = 0;
+    unsigned int jn = 0;
+
+    for (float i = 0; i < width && in < newWidth; i+=ratioX){
+        jn = 0;
+        for (float j = 0; j < height && jn < newHeight; j+=ratioY){
+            newMatrix[in*newWidth+jn] = matrix[(int)i*width+(int)j];
+            jn++;
+        }
+        in++;
     }
     return newMatrix;
 }
@@ -107,3 +121,26 @@ unsigned int charSave(unsigned int list[], unsigned int matrix[], unsigned int w
     return numberOfChar;
 }
 
+unsigned int * trim(unsigned int *matrix, unsigned int width, unsigned int height){
+    unsigned int * newMatrix = calloc(width * height, sizeof(unsigned int));
+    unsigned int * xList = matrixToListChar(matrix, width, height);
+    unsigned int * yList = matrixToListCharTransposed(matrix, width, height);
+    unsigned int in = 0;
+    unsigned int jn = 0;
+    printf("list :\n");
+    for (unsigned int i = 0; i < width; i++)
+        printf("%u, ", yList[i]);
+    printf("\n");
+    for (unsigned int i = 0; i < height; i++){
+        if(yList[i] == 1){
+            for (unsigned int j = 0; j < width; j++){
+                if(xList[j] == 1){
+                    newMatrix[i*width+j] = matrix[i*width+j];
+                    jn++;
+                }
+            }
+            in++;
+        }
+    }
+    return newMatrix;
+}

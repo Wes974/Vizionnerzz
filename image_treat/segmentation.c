@@ -17,7 +17,7 @@ void segmentation(unsigned int * matrixPicture, unsigned int width, unsigned int
     }
     
     printf("Original Image :\n");
-    /*
+    
     for (unsigned int i = 0; i < height; i++){
         for (unsigned int j = 0; j < width; j++){
             printf("%u ", matrixPicture[i*width+j]);
@@ -25,7 +25,7 @@ void segmentation(unsigned int * matrixPicture, unsigned int width, unsigned int
         printf("\n");
     }
     printf("\n");
-    */
+    
     //LINE//
     
     unsigned int * listLines = matrixToListLine(matrixPicture, height, width);
@@ -68,11 +68,6 @@ void segmentation(unsigned int * matrixPicture, unsigned int width, unsigned int
         unsigned int threshold = thresholdDefine(listWordsV1, width);
         unsigned int * listWords = matrixWordSpace(listWordsV1, threshold, width);
 
-        printf("\n");
-        for (unsigned int j = 0; j < width; j++){
-            printf("%u ", listWords[j]);
-        }
-        printf("\n");
 
         printf("Threshold = %u\n\n", threshold);
         unsigned int numberOfWord = wordSave(listWordsV1, lineMatrix, width, lineHeightNumber, i);
@@ -111,7 +106,7 @@ void segmentation(unsigned int * matrixPicture, unsigned int width, unsigned int
             unsigned int * listChar = matrixToListChar(wordMatrix, lineHeightNumber, wordWidthNumber);
 
             unsigned int numberOfChar = charSave(listChar, wordMatrix, wordWidthNumber, lineHeightNumber, i, j);
-            
+            printf("numberOfChar = %u\n", numberOfChar);
             for (unsigned int k = 0; k < numberOfChar; k++){
                 //GET CHAR
                 FILE *charFile;
@@ -123,7 +118,7 @@ void segmentation(unsigned int * matrixPicture, unsigned int width, unsigned int
                 
                 unsigned int *charMatrix = calloc(1920*1080, sizeof(unsigned int));
                 unsigned int *q =charMatrix;
-                for (unsigned int k = 0; k < 1920*1080; k++){
+                for (unsigned int k = 0; k < 999; k++){
                     *q = charMatrixChar[k] - 48;
                     q++;
                 }
@@ -132,17 +127,17 @@ void segmentation(unsigned int * matrixPicture, unsigned int width, unsigned int
                 unsigned int charWidthNumber;
                 sscanf(charWidth, "%d", &charWidthNumber);
 
-
+                unsigned int * charMatrixTrim = trim(charMatrix, charWidthNumber, lineHeightNumber);
 
                 printf("Char number %u \n", k);
                 for (unsigned int k = 0; k < lineHeightNumber; k++){
                     for (unsigned int l = 0; l < charWidthNumber; l++){
-                        printf("%u ", charMatrix[k*charWidthNumber+l]);
+                        printf("%u ", charMatrixTrim[k*charWidthNumber+l]);
                     }
                     printf("\n");
                 }
-                
-                unsigned int * newCharMatrix = resize(charMatrix, charWidthNumber, lineHeightNumber, 24, 24);
+
+                unsigned int * newCharMatrix = resize(charMatrixTrim, charWidthNumber, lineHeightNumber, 24, 24);
                 
                 printf("\nChar number %u (Resized)\n", k);
                 for (unsigned int k = 0; k < 24; k++){
@@ -151,16 +146,16 @@ void segmentation(unsigned int * matrixPicture, unsigned int width, unsigned int
                     }
                     printf("\n");
                 }
-                
+
                 free(charMatrix);
                 fclose(charFile);
             }
-            //free(wordMatrix);
-            //fclose(wordFile);
-            //remove(wordFilename);
+            free(wordMatrix);
+            fclose(wordFile);
+            remove(wordFilename);
         }
-        //fclose(lineFile);
-        //remove(lineFilename);
+        fclose(lineFile);
+        remove(lineFilename);
         //free(lineMatrix);
         //free(listWords);
         //free(listWordsV1);

@@ -19,7 +19,7 @@ unsigned int * matrixToListWord(unsigned int matrix[], unsigned int height, unsi
     return list;
 }
 
-unsigned int thresholdDefine(unsigned int list[], unsigned int width){                  //Find the threshold between the space between characters and the space between words.
+unsigned int thresholdDefine(unsigned int list[], unsigned int width){
     unsigned int num = 0;
     unsigned int denum = 0;
     unsigned int prevBlack = 0;
