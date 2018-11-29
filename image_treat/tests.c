@@ -45,7 +45,6 @@ int main(int argc, char** argv)
     segmentation(otsu_array, width, height);
     
     //NETWORK//
-
     /*
     //Create the file result.txt
     FILE *result;
@@ -103,7 +102,6 @@ int main(int argc, char** argv)
         }
     }
     */
-
     //Free the image array memory
     free(gray);
     

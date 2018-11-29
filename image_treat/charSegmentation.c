@@ -62,14 +62,14 @@ void cutChar(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
         fputc(width % 10 + 48, fp);
         width /= 10;
     }
-
+    /*
     //Add height in the file
     fprintf(fp, " ");
     while (height > 0){
         fputc(height % 10 + 48, fp);
         height /= 10;
     }
- 
+    */
     fclose(fp);
 }
 
