@@ -231,14 +231,14 @@ void backPropagation(Network *net, double expectedResults[], size_t resStart, do
     // 3 - Hidden layer errors && weights
 
     for (size_t i = 0; i < net->count_nr[1]; i++) {
-        for (size_t j = 0; j < net->count_weight[0]; j++) {
-            double e = 0.0;
+        double e = 0.0;
+        for (size_t j = 0; j < net->count_weight[1]; j++) {
+            e += net->weights[outputWeightPos + i + j * net->count_weight[1]] * outputErrors[k];
             for (size_t k = 0; k < net->count_nr[2]; k++) {
-                e += net->weights[i * net->count_weight[0] + j] * outputErrors[k];
             }
-            newWeights[i * net->count_weight[0] + j] = trainingStep * e * net->computed[j] * transferDeriv(net->computed[net->count_nr[0] + i]);
-            newBias[i] = e * trainingStep * transferDeriv(net->computed[net->count_nr[0] + i]);
         }
+        newWeights[i * net->count_weight[0] + j] = trainingStep * e * net->computed[j] * transferDeriv(net->computed[net->count_nr[0] + i]);
+        newBias[i] = e * trainingStep * transferDeriv(net->computed[net->count_nr[0] + i]);
     }
 
     for (size_t i = 0; i < sizeof(newWeights) / sizeof(double); i++) {
