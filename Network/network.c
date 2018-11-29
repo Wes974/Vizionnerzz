@@ -23,11 +23,12 @@ int main(){
     /********* NETWORK INIT *********/
     /********************************/
 
-    srand(3);
+    srand(time(NULL));
 
     Network n;
     Network *net = &n;
 
+    // computed[5] = {0, 0, 0, 0, 0};
     net->computed = calloc(5, sizeof(double));
 
     double weights[6] = {1, 1, 1, 1, 1, 1};
@@ -86,6 +87,11 @@ int main(){
             //printf("%lu ", testIndex + 1);
             net->computed[0] = trainingSet[2 * testIndex];
             net->computed[1] = trainingSet[2 * testIndex + 1];
+
+            // for (size_t i = 0; i < 5; i++)
+            //     printf("computed[%lu] = %f  ", i, net->computed[i]);
+
+            // printf("\t i = %lu\n", i);
 
     /********************************/
     /********* PROPAGATION **********/
@@ -187,7 +193,7 @@ void forwardPropagation(Network *net) {
         for (size_t j = 0; j < net->count_weight[0]; j++) {
             sum += net->computed[j] * net->weights[i * net->count_weight[0] + j];
         }
-        net->computed[net->count_nr[0] + i] = sigmoid(sum);
+        net->computed[net->count_nr[0] + i] = sigmoid(sum + net->bias[i]);
     }
 
     // Output Layer
@@ -197,7 +203,7 @@ void forwardPropagation(Network *net) {
         for (size_t j = 0; j < net->count_weight[1]; j++) {
             sum += net->computed[net->count_nr[0] + j] * net->weights[net->count_weight[0] * net->count_nr[1] + i * net->count_weight[1] + j];
         }
-        net->computed[net->count_nr[0] + net->count_nr[1] + i] = sigmoid(sum);
+        net->computed[net->count_nr[0] + net->count_nr[1] + i] = sigmoid(sum + net->bias[2]);
     }
 }
 
