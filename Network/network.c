@@ -227,11 +227,7 @@ void backPropagation(Network *net, double expectedResults[], size_t resStart, do
     size_t outputWeightPos = net->count_nr[1] * net->count_weight[0];
 
     for (size_t i = 0; i < net->count_nr[2]; i++) {
-        outputErrors[i] = (expectedResults[resStart + i] - net->computed[outputPos + i]);
-        /*newBias[net->count_nr[1] + i] = outputErrors[i] * trainingStep * transferDeriv(net->computed[outputPos + i]);
-        for (size_t j = 0; j < net->count_weight[1]; j++) {
-            newWeights[outputWeightPos + i * net->count_weight[1] + j] = trainingStep * outputErrors[i] * net->computed[net->count_nr[0] + j] * transferDeriv(net->computed[outputPos + i]);
-        }*/
+        outputErrors[i] = (expectedResults[resStart + i] - net->computed[outputPos + i]) * transferDeriv(net->computed[outputPos + i]) ;
     }
 
     // 2 - Hidden layer errors
@@ -240,34 +236,27 @@ void backPropagation(Network *net, double expectedResults[], size_t resStart, do
         double e = 0.0;
         for (size_t j = 0; j < net->count_nr[2]; j++) {
             e += net->weights[outputWeightPos + i + j * net->count_weight[1]] * outputErrors[j];
-            /*for (size_t k = 0; k < net->count_nr[2]; k++) {
-            }*/
         }
-        /*newWeights[i * net->count_weight[0] + j] = trainingStep * e * net->computed[j] * transferDeriv(net->computed[net->count_nr[0] + i]);
-        newBias[i] = e * trainingStep * transferDeriv(net->computed[net->count_nr[0] + i]);*/
-        hiddenErrors[i] = e;
+        hiddenErrors[i] = e  * transferDeriv(net->computed[net->count_nr[0] + i]);
     }
 
     // 3 - Output new weights
     
     for (size_t i = 0; i < net->count_nr[2]; i++) {
-        double w = trainingStep * outputErrors[i] * transferDeriv(net->computed[outputPos + i]);
+        double w = trainingStep * outputErrors[i];
         for (size_t j = 0; j < net->count_weight[1]; j++)
-            newWeights[outputWeightPos + i * net->count_weight[1] + j] = w * net->computed[outputPos + i];
+            newWeights[outputWeightPos + i * net->count_weight[1] + j] = w * net->computed[net->count_nr[0] + j];
         newBias[net->count_nr[1] + i] = w;
     }
 
     // 4 - Hidden new weights
 
     for (size_t i = 0; i < net->count_nr[1]; i++) {
-        double w = trainingStep * hiddenErrors[i] * transferDeriv(net->computed[net->count_nr[0] + i]);
+        double w = trainingStep * hiddenErrors[i];
         for (size_t j = 0; j < net->count_weight[0]; j++)
-            newWeights[i * net->count_weight[0] + j] = w * net->computed[net->count_nr[0] + i];
+            newWeights[i * net->count_weight[0] + j] = w * net->computed[j];
         newBias[i] = w;
     }
-
-    //printArr(newWeights, sizeof(newWeights) / sizeof(double), "newWeights");
-    //printArr(newBias, sizeof(newBias) / sizeof(double), "newBias");
 
     for (size_t i = 0; i < sizeof(newWeights) / sizeof(double); i++) {
         net->weights[i] += newWeights[i];
