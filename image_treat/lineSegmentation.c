@@ -5,7 +5,7 @@
 #include <sys/types.h>
 
 unsigned int * matrixToListLine(unsigned int matrix[], unsigned int height, unsigned int width) {
-    unsigned int *list = calloc(width, sizeof(unsigned int));
+    unsigned int *list = calloc(height, sizeof(unsigned int));
 
     for(unsigned int i = 0; i < height; i++){
         unsigned int value = 0;
@@ -34,17 +34,27 @@ void cutLine(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
         fp = fopen(filename, "w");
     }
 
-    for(unsigned int i = pos1; i < pos2; i++){
+    printf("pos 1 = %u\npos2 = %u", pos1, pos2);
+    for(unsigned int i = pos1; i <= pos2; i++){
         for(unsigned int j = 0; j < width; j++){
             fputc(matrix[i*width+j] + 48, fp);
         }
     }
     fprintf(fp, " ");
     height = pos2 - pos1;
+    //printf("height = %u\n", height);
+    unsigned int nb = 0;
     while (height > 0){
-        fputc(height % 10 + 48, fp);
         height /= 10;
+        nb++;
     }
+    height = pos2 - pos1;
+    while (nb > 1){
+        fputc(height / ((nb - 1) *10) + 48, fp);
+        height %= 10;
+        nb--;
+    }
+    fputc(height % 10 + 48, fp);
     fclose(fp);
 }
 

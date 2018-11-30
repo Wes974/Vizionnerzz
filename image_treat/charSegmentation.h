@@ -8,6 +8,6 @@ void cutChar(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
  
 unsigned int charSave(unsigned int list[], unsigned int matrix[], unsigned int width, unsigned int heigth, unsigned int numberOfLine, unsigned int numberOfWord);
 
-unsigned int * trim(unsigned int * matrix, unsigned int width, unsigned int height);
-
+unsigned int * trim(unsigned int * matrix, unsigned int width, unsigned int *height);
+unsigned int * cutLineChar(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsigned int width, unsigned int height);
 #endif
