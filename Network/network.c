@@ -32,8 +32,8 @@ int main(){
 
     initNetwork(net, count_nr);
     
-    printArr(net->weights, 6, "weights");
-    printArr(net->bias, 3, "bias");
+    printArr(net->weights, net->count_weight[0] * net->count_nr[1] + net->count_weight[1] * net->count_nr[2], "weights");
+    printArr(net->bias, net->count_nr[1] + net->count_nr[2], "bias");
 
     //////////////////////////////////
     ///////// INITALIZATION //////////
@@ -172,11 +172,11 @@ void initNetwork(Network *net, unsigned int *count_nr) {
     
     net->count_weight[0] = count_nr[0];
     net->count_weight[1] = count_nr[1];
-    for (size_t i = 0; i < net->count_weight[0] + net->count_weight[1]; i++) {
+    for (size_t i = 0; i < count_nr[0] * count_nr[1] + count_nr[1] * count_nr[2]; i++) {
         double r = (double)rand() / (double)(RAND_MAX / 5);
         net->weights[i] = r;
     }
-    for (size_t i = 0; i < 3; i++) {
+    for (size_t i = 0; i < count_nr[1] + count_nr[2]; i++) {
         double r = (double)rand() / (double)(RAND_MAX / 5);        
         net->bias[i] = r;
     }
