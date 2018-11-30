@@ -28,34 +28,12 @@ int main(){
     Network n;
     Network *net = &n;
 
-    // computed[5] = {0, 0, 0, 0, 0};
-    net->computed = calloc(5, sizeof(double));
+    unsigned int count_nr[] = {2, 2, 1}; 
 
-    double weights[6] = {1, 1, 1, 1, 1, 1};
-
-    for (size_t i = 0; i < 6; i++) {
-
-        double r = (double)rand() / (double)(RAND_MAX / 5);
-        weights[i] = r;
-
-    }
-
-
-    net->weights = weights;
-
-    unsigned int count_nr[] = {2, 2, 1};
-    net->count_nr = count_nr;
-
-    unsigned int count_weight[] = {2, 2};
-    net->count_weight = count_weight;
-
-    double bias[3] = {0, 0, 0};
-    for (size_t i = 0; i < 3; i++)
-        bias[i] = (double)rand() / (double)(RAND_MAX / 5);
-    net->bias = bias;
-
-    printArr(weights, 6, "weights");
-    printArr(bias, 3, "bias");
+    initNetwork(net, count_nr);
+    
+    printArr(net->weights, 6, "weights");
+    printArr(net->bias, 3, "bias");
 
     //////////////////////////////////
     ///////// INITALIZATION //////////
@@ -184,6 +162,25 @@ int main(){
     return 0;
 }
 
+
+void initNetwork(Network *net, unsigned int *count_nr) {
+    net->computed = calloc(count_nr[0] + count_nr[1] + count_nr[2], sizeof(double));
+    net->count_nr = count_nr;
+    net->weights = calloc(count_nr[0] * count_nr[1] + count_nr[1] * count_nr[2], sizeof(double));
+    net->bias = calloc(count_nr[1] + count_nr[2], sizeof(double));
+    net->count_weight = calloc(2, sizeof(unsigned int));
+    
+    net->count_weight[0] = count_nr[0];
+    net->count_weight[1] = count_nr[1];
+    for (size_t i = 0; i < net->count_weight[0] + net->count_weight[1]; i++) {
+        double r = (double)rand() / (double)(RAND_MAX / 5);
+        net->weights[i] = r;
+    }
+    for (size_t i = 0; i < 3; i++) {
+        double r = (double)rand() / (double)(RAND_MAX / 5);        
+        net->bias[i] = r;
+    }
+}
 
     //////////////////////////////////
     // Forward Propagation function //

@@ -21,6 +21,7 @@ struct Network {
 
 void forwardPropagation(Network  *net);
 void backPropagation(Network *net, double expectedResults[], size_t resStart, double trainingStep);
+void initNetwork(Network *net, unsigned int *count_nr);
 
 double sigmoid(double z);
 double transferDeriv(double x);
