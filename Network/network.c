@@ -40,6 +40,7 @@ int main(){
 
     }
 
+
     net->weights = weights;
 
     unsigned int count_nr[] = {2, 2, 1};
@@ -49,8 +50,12 @@ int main(){
     net->count_weight = count_weight;
 
     double bias[3] = {0, 0, 0};
+    for (size_t i = 0; i < 3; i++)
+        bias[i] = (double)rand() / (double)(RAND_MAX / 5);
     net->bias = bias;
 
+    printArr(weights, 6, "weights");
+    printArr(bias, 3, "bias");
 
     //////////////////////////////////
     ///////// INITALIZATION //////////
@@ -229,11 +234,11 @@ void backPropagation(Network *net, double expectedResults[], size_t resStart, do
         }*/
     }
 
-    // 3 - Hidden layer errors
+    // 2 - Hidden layer errors
 
     for (size_t i = 0; i < net->count_nr[1]; i++) {
         double e = 0.0;
-        for (size_t j = 0; j < net->count_weight[1]; j++) {
+        for (size_t j = 0; j < net->count_nr[2]; j++) {
             e += net->weights[outputWeightPos + i + j * net->count_weight[1]] * outputErrors[j];
             /*for (size_t k = 0; k < net->count_nr[2]; k++) {
             }*/
@@ -242,6 +247,27 @@ void backPropagation(Network *net, double expectedResults[], size_t resStart, do
         newBias[i] = e * trainingStep * transferDeriv(net->computed[net->count_nr[0] + i]);*/
         hiddenErrors[i] = e;
     }
+
+    // 3 - Output new weights
+    
+    for (size_t i = 0; i < net->count_nr[2]; i++) {
+        double w = trainingStep * outputErrors[i] * transferDeriv(net->computed[outputPos + i]);
+        for (size_t j = 0; j < net->count_weight[1]; j++)
+            newWeights[outputWeightPos + i * net->count_weight[1] + j] = w * net->computed[outputPos + i];
+        newBias[net->count_nr[1] + i] = w;
+    }
+
+    // 4 - Hidden new weights
+
+    for (size_t i = 0; i < net->count_nr[1]; i++) {
+        double w = trainingStep * hiddenErrors[i] * transferDeriv(net->computed[net->count_nr[0] + i]);
+        for (size_t j = 0; j < net->count_weight[0]; j++)
+            newWeights[i * net->count_weight[0] + j] = w * net->computed[net->count_nr[0] + i];
+        newBias[i] = w;
+    }
+
+    //printArr(newWeights, sizeof(newWeights) / sizeof(double), "newWeights");
+    //printArr(newBias, sizeof(newBias) / sizeof(double), "newBias");
 
     for (size_t i = 0; i < sizeof(newWeights) / sizeof(double); i++) {
         net->weights[i] += newWeights[i];
