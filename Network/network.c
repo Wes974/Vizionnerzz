@@ -3,6 +3,7 @@
 //  OCR Project
 //
 
+#define _GNU_SOURCE
 #include "network.h"
 #include <math.h>
 #include <stdio.h>
@@ -18,9 +19,34 @@ int main(){
     ///////// TRAINING DATA //////////
     //////////////////////////////////
 
-    int trainingSet[] = {0, 0, 0, 1, 1, 0, 1, 1};
-    double expectedResults[] = {0, 1, 1, 0, 1, 0, 0, 1};
+    /*int trainingSet[] = {0, 0, 0, 1, 1, 0, 1, 1};
+    double expectedResults[] = {0, 1, 1, 0, 1, 0, 0, 1};*/
     double trainingStep = 1;
+
+    FILE *f;
+    f = fopen("./alphabeat.txt", "r");
+    if (f == NULL) {
+      perror("Error while opening the file.\n");
+      exit(EXIT_FAILURE);
+    }
+    unsigned int in = 100, out = 36;
+    char expectedChar[out];
+    double expectedResults[out * out];
+    double trainingSet[out * in];
+    for (size_t i = 0; i < out; i++) {
+        char *l = NULL;
+        size_t size;
+        getline(&l, &size, f);
+        if (i == 0)
+            printf("%s\n", l);
+        expectedChar[i] = *l;
+        for (size_t j = 0; j < out; j++) {
+            expectedResults[i * out + j] = j == i;  
+        }
+        for (size_t j = 0; j < in; j++) {
+            trainingSet[i * in + j] = *(l + 1 + j) - '0';
+        }
+    }
 
     //////////////////////////////////
     ////////// NETWORK INIT //////////
@@ -31,12 +57,12 @@ int main(){
     Network n;
     Network *net = &n;
 
-    unsigned int count_nr[] = {2, 10, 2}; 
+    unsigned int count_nr[] = {in, 100, out}; 
 
     initNetwork(net, count_nr);
     
-    printArr(net->weights, net->count_weight[0] * net->count_nr[1] + net->count_weight[1] * net->count_nr[2], "weights");
-    printArr(net->bias, net->count_nr[1] + net->count_nr[2], "bias");
+    //printArr(net->weights, net->count_weight[0] * net->count_nr[1] + net->count_weight[1] * net->count_nr[2], "weights");
+    //printArr(net->bias, net->count_nr[1] + net->count_nr[2], "bias");
 
     //////////////////////////////////
     ///////// INITALIZATION //////////
@@ -51,26 +77,27 @@ int main(){
     //          [i -> 0, i -> 1, 0 -> 2, 0 -> 3, 1 -> 2, 1 -> 3, 2 -> 4, 3 -> 4]
 
 
-    net->computed[0] = 1;
-    net->computed[1] = 1;
+    //net->computed[0] = 1;
+    //net->computed[1] = 1;
     /*double w[6] = {1.0, -1.0, -1.0, 1.0, 1.0, 1.0};
     net->weights = w;*/
 
-    forwardPropagation(net);
+    //forwardPropagation(net);
     //printf("prop(1,1) = %f\n", net->computed[4]);
-    printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(1, 1)");    
-    net->computed[1] = 0;
-    forwardPropagation(net);
+    //printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(1, 1)");    
+    //net->computed[1] = 0;
+    //forwardPropagation(net);
     //printf("prop(1,0) = %f\n", net->computed[4]);
-    printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(1, 0)");
+    //printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(1, 0)");
 
     //backPropagation(net, expectedResults, 1, .1);
 
     //return 0;
     
-    size_t iter = 1000000;
+    size_t iter = 1000;
     
     struct timespec t0, t1;
+    double totalTime = 0;
     clock_gettime(CLOCK_MONOTONIC, &t0);
     printf("Training %lu times with %f training step\n", iter, trainingStep);
     for (size_t i = 0; i < iter; i++)
@@ -78,16 +105,22 @@ int main(){
         if (i % (iter / 10) == 0) {
             
             clock_gettime(CLOCK_MONOTONIC, &t1);
-            printf("[%2g/10]: \t%f s\n", (double) i / (iter / 10), time_gdiff(t0, t1));
+            printf("[%2g/10]: \t%fs\n", (double) i / (iter / 10), time_gdiff(t0, t1));
+            totalTime += time_gdiff(t0, t1);
             clock_gettime(CLOCK_MONOTONIC, &t0);
         
             // printf("[%2g/10]\n",(double) i / (iter / 10));
         }
         //printf("Iter %lu: ", i);
-        for (size_t testIndex = 0; testIndex < testMaxCount; testIndex++) {
+        for (size_t testIndex = 0; testIndex < out; testIndex++) {
+            //if (i % (iter / 10) == 0) {
+            //    printArr(expectedResults + testIndex * net->count_nr[2], net->count_nr[2], "expected");
+            //}
             //printf("%lu ", testIndex + 1);
-            net->computed[0] = trainingSet[2 * testIndex];
-            net->computed[1] = trainingSet[2 * testIndex + 1];
+            //net->computed[0] = trainingSet[2 * testIndex];
+            //net->computed[1] = trainingSet[2 * testIndex + 1];
+            for (size_t i = 0; i < net->count_nr[0]; i++)
+                net->computed[i] = trainingSet[testIndex * net->count_nr[0] + i];
 
             // for (size_t i = 0; i < 5; i++)
             //     printf("computed[%lu] = %f  ", i, net->computed[i]);
@@ -101,14 +134,23 @@ int main(){
 
     }
     clock_gettime(CLOCK_MONOTONIC, &t1);
-    printf("[10/10]: \t%f s\n", time_gdiff(t0, t1));
+    printf("[10/10]: \t%fs\n", time_gdiff(t0, t1));
+    totalTime += time_gdiff(t0, t1);
+    printf("Total time: \t%fs\n", totalTime);
 
 
     //////////////////////////////////
     ////////// FINAL TESTS ///////////
     //////////////////////////////////
+    printArr(net->computed, net->count_nr[2] + net->count_nr[1] + net->count_nr[0], "computed Before");
 
-    net->computed[0] = 0;
+    for (size_t i = 0; i < 2; i++) {
+        testNetwork(net, trainingSet + i * in, expectedResults + (i * out), expectedChar, 1);
+        //printArr(net->computed + net->count_nr[0] + net->count_nr[1], net->count_nr[2], "result");
+    }
+    printArr(net->computed, net->count_nr[2] + net->count_nr[1] + net->count_nr[0], "computed After");
+
+    /*net->computed[0] = 0;
     net->computed[1] = 0;
     forwardPropagation(net);
     // printf("(0, 0) = %f\n", net->computed[4]);
@@ -133,7 +175,7 @@ int main(){
     printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(1, 1)");
 
     printArr(net->weights, net->count_nr[1] * (net->count_nr[0] + net->count_nr[2]), "weights");
-    printArr(net->bias, 2/*net->count_nr[1] + net->count_nr[2]*/, "bias");
+    printArr(net->bias, 2, "bias");*/
 
     return 0;
 }
@@ -152,11 +194,11 @@ void initNetwork(Network *net, unsigned int *count_nr) {
     net->count_weight[0] = count_nr[0];
     net->count_weight[1] = count_nr[1];
     for (size_t i = 0; i < count_nr[0] * count_nr[1] + count_nr[1] * count_nr[2]; i++) {
-        double r = (double)rand() / (double)(RAND_MAX / 5);
+        double r = (double)rand() / (double)(RAND_MAX / 1);
         net->weights[i] = r;
     }
     for (size_t i = 0; i < 2/*count_nr[1] + count_nr[2]*/; i++) {
-        double r = (double)rand() / (double)(RAND_MAX / 5);        
+        double r = (double)rand() / (double)(RAND_MAX / 1);        
         net->bias[i] = r;
     }
 }
@@ -174,7 +216,7 @@ void forwardPropagation(Network *net) {
         for (size_t j = 0; j < net->count_weight[0]; j++) {
             sum += net->computed[j] * net->weights[i * net->count_weight[0] + j];
         }
-        net->computed[net->count_nr[0] + i] = sigmoid(sum + net->bias[/*i*/0]);
+        net->computed[net->count_nr[0] + i] = sigmoid(sum + net->bias[0]);
     }
 
     // Output Layer
@@ -196,7 +238,7 @@ void forwardPropagation(Network *net) {
 
 void backPropagation(Network *net, double expectedResults[], size_t resStart, double trainingStep) {
     double newWeights[net->count_weight[0] * net->count_nr[1] + net->count_weight[1] * net->count_nr[2]];
-    double newBias[/*net->count_nr[1] + net->count_nr[2]*/2] = {0, 0};
+    double newBias[2] = {0, 0};
     double outputErrors[net->count_nr[2]];
     double hiddenErrors[net->count_nr[1]];
     
@@ -235,6 +277,9 @@ void backPropagation(Network *net, double expectedResults[], size_t resStart, do
             newWeights[i * net->count_weight[0] + j] = w * net->computed[j];
         newBias[/*i*/0] += w;
     }
+
+    //printArr(newWeights, sizeof(newWeights) / sizeof(double), "newWeights");
+    //printArr(newBias, sizeof(newBias) / sizeof(double), "newBias");
 
     for (size_t i = 0; i < sizeof(newWeights) / sizeof(double); i++) {
         net->weights[i] += newWeights[i];
@@ -277,7 +322,28 @@ void softmax(Network *net) {
 
 }
 
+// Test
+int testNetwork(Network *net, double *input, double *expectedResult, char *charList, int print) {
+    for (size_t i = 0; i < net->count_nr[0]; i++)
+        net->computed[i] = input[i];
+    forwardPropagation(net);
+    double *res = (net->computed) + net->count_nr[0] + net->count_nr[1];
+    if (print) {
+        printArr(input, net->count_nr[0], "input");
+        printArr(res, net->count_nr[2], "output");
+        printArr(expectedResult, net->count_nr[2], "expected");
+    }
+    size_t r = 0, e = 0;
+    for (size_t i = 1; i < net->count_nr[2]; i++) {
+        r = res[i] > res[r] ? i : r;
+        e = expectedResult[i] > expectedResult[e] ? i : e;
+    }
+    printf("expected: %c, result: %c\n", charList[e], charList[r]);
+    return charList[e] == charList[r];
+}
+
 // Save
+/*
 void saveNetwork(Network *net) {
     FILE *saveFile;
     saveFile = fopen("./network/save.txt", "w");
@@ -288,6 +354,6 @@ void saveNetwork(Network *net) {
     }
 
     //TODO
-}
+}*/
 
 // Load

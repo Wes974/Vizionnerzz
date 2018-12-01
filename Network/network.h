@@ -35,6 +35,7 @@ double sigmoid(double z);
 double transferDeriv(double x);
 void softmax(Network *net);
 void printArr(double arr[], size_t count, char name[]);
+int testNetwork(Network *net, double *input, double *expectedResult, char *charList, int print);
 void saveNetwork(Network *net) ;
 
 #endif
