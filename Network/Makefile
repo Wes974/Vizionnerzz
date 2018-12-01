@@ -2,7 +2,7 @@
 
 CPPFLAGS = -MMD
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99 -O3
+CFLAGS = -Wall -Wextra -std=c99 -O3 -D_POSIX_C_SOURCE=199309L
 LDFLAGS =
 LDLIBS = -lm
 
