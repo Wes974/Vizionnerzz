@@ -17,7 +17,8 @@ struct Network {
     double *bias;           // Biases array
     unsigned int *count_nr;       // Neuron count by layer array
     unsigned int *count_weight;   // Weights count by neuron by layer array
- 
+
+    int *inputs;
 };
 
 void forwardPropagation(Network  *net);
