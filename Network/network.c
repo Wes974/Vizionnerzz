@@ -17,8 +17,8 @@ int main(){
     //////////////////////////////////
 
     int trainingSet[] = {0, 0, 0, 1, 1, 0, 1, 1};
-    double expectedResults[] = {0, 1, 1, 0};
-    double trainingStep = 0.2;
+    double expectedResults[] = {0, 1, 1, 0, 1, 0, 0, 1};
+    double trainingStep = 1;
 
     //////////////////////////////////
     ////////// NETWORK INIT //////////
@@ -29,7 +29,7 @@ int main(){
     Network n;
     Network *net = &n;
 
-    unsigned int count_nr[] = {2, 2, 1}; 
+    unsigned int count_nr[] = {2, 2, 2}; 
 
     initNetwork(net, count_nr);
     
@@ -41,7 +41,7 @@ int main(){
     //////////////////////////////////
 
 
-    size_t testMaxCount = sizeof(expectedResults) / sizeof(expectedResults[0]);
+    size_t testMaxCount = sizeof(expectedResults) / sizeof(expectedResults[0]) / net->count_nr[2];
 
     // Weights: [ in0.0,  in1.0, hid0.0, hid0.1, hid1.0, hid1.1, out0.0, out0.1]
     //          [ neur0,  neur1,  neur2,  neur2,  neur3,  neur3,  neur4,  neur4]
@@ -55,10 +55,12 @@ int main(){
     net->weights = w;*/
 
     forwardPropagation(net);
-    printf("prop(1,1) = %f\n", net->computed[4]);
+    //printf("prop(1,1) = %f\n", net->computed[4]);
+    printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(1, 1)");    
     net->computed[1] = 0;
     forwardPropagation(net);
-    printf("prop(1,0) = %f\n", net->computed[4]);
+    //printf("prop(1,0) = %f\n", net->computed[4]);
+    printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(1, 0)");
 
     //backPropagation(net, expectedResults, 1, .1);
 
@@ -68,8 +70,9 @@ int main(){
     
     struct timespec t0, t1;
     clock_gettime(CLOCK_MONOTONIC, &t0);
-    
-    for (size_t i = 0; i < iter; i++) {
+    printf("Training %lu times with %f training step\n", iter, trainingStep);
+    for (size_t i = 0; i < iter; i++)
+    {
         if (i % (iter / 10) == 0) {
             
             clock_gettime(CLOCK_MONOTONIC, &t1);
@@ -90,7 +93,7 @@ int main(){
             // printf("\t i = %lu\n", i);
 
             forwardPropagation(net);
-            backPropagation(net, expectedResults, testIndex, trainingStep);
+            backPropagation(net, expectedResults, testIndex * net->count_nr[2], trainingStep);
         }
         //printf("\n");
 
@@ -106,22 +109,26 @@ int main(){
     net->computed[0] = 0;
     net->computed[1] = 0;
     forwardPropagation(net);
-    printf("(0, 0) = %f\n", net->computed[4]);
+    // printf("(0, 0) = %f\n", net->computed[4]);
+    printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(0, 0)");
 
     net->computed[0] = 0;
     net->computed[1] = 1;
     forwardPropagation(net);
-    printf("(0, 1) = %f\n", net->computed[4]);
+    // printf("(0, 1) = %f\n", net->computed[4]);
+    printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(0, 1)");
 
     net->computed[0] = 1;
     net->computed[1] = 0;
     forwardPropagation(net);
-    printf("(1, 0) = %f\n", net->computed[4]);
+    // printf("(1, 0) = %f\n", net->computed[4]);
+    printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(1, 0)");
 
     net->computed[0] = 1;
     net->computed[1] = 1;
     forwardPropagation(net);
-    printf("(1, 1) = %f\n", net->computed[4]);
+    // printf("(1, 1) = %f\n", net->computed[4]);
+    printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(1, 1)");
 
     return 0;
 }
@@ -169,8 +176,10 @@ void forwardPropagation(Network *net) {
         for (size_t j = 0; j < net->count_weight[1]; j++) {
             sum += net->computed[net->count_nr[0] + j] * net->weights[net->count_weight[0] * net->count_nr[1] + i * net->count_weight[1] + j];
         }
-        net->computed[net->count_nr[0] + net->count_nr[1] + i] = sigmoid(sum + net->bias[2]);
+        net->computed[net->count_nr[0] + net->count_nr[1] + i] = sum + net->bias[2];
     }
+
+    softmax(net);
 }
 
     //////////////////////////////////
@@ -244,4 +253,18 @@ void printArr(double arr[], size_t count, char name[]) {
     for (size_t i = 1; i < count; i++)
         printf(", %f", arr[i]);
     printf("]\n");
+}
+
+void softmax(Network *net) {
+
+    double sum = 0.0;
+    size_t pos = net->count_nr[0] + net->count_nr[1];
+    for (size_t i = 0; i < net->count_nr[2]; i++) {
+        sum += exp(net->computed[pos + i]);
+    }
+
+    for (size_t i = 0; i < net->count_nr[2]; i++) {
+        net->computed[pos + i] = exp(net->computed[pos + i]) / sum;
+    }
+
 }

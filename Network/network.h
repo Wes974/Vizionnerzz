@@ -33,5 +33,7 @@ double time_gdiff(struct timespec t0, struct timespec t1)
 
 double sigmoid(double z);
 double transferDeriv(double x);
+void softmax(Network *net);
 void printArr(double arr[], size_t count, char name[]);
+
 #endif
