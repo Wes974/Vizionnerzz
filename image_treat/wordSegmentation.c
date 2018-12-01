@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "wordSegmentation.h"
+#include <math.h>
 
 unsigned int *matrixToListWord(unsigned int matrix[], unsigned int height, unsigned int width)
 {
@@ -28,10 +29,12 @@ unsigned int thresholdDefine(unsigned int list[], unsigned int width)
     unsigned int num = 0;
     unsigned int denum = 0;
     unsigned int prevBlack = 0;
-    for (unsigned int i = 1; i < width; i++)
+    unsigned int currentWhite = 0;
+    for (unsigned int i = 0; i < width; i++)
     {
         if (list[i] == 0)
         {
+            currentWhite++;
             num++;
             if (prevBlack)
             {
@@ -42,9 +45,16 @@ unsigned int thresholdDefine(unsigned int list[], unsigned int width)
         else
         {
             prevBlack = 1;
+            currentWhite = 0;
         }
     }
     //printf("%u, %u", num, denum);
+    
+    if (currentWhite){
+        num -= currentWhite;
+        denum--;
+    }
+    
     if (denum == 0)
     {
         return 0;
@@ -56,18 +66,18 @@ void cutWord(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
 {
 
     FILE *fp;
-    char filename[292];
+    char filename[28 + 10];
     sprintf(filename, "./data/line_%i/word_%i/word_%i.txt", lineNumber, numberOfWord, numberOfWord);
+    char directoryName[19 + 8];
+    sprintf(directoryName, "./data/line_%i/word_%i/", lineNumber, numberOfWord);
     fp = fopen(filename, "w");
-
-    if (fp == NULL)
+    if (!mkdir(directoryName, S_IRUSR | S_IWUSR | S_IXUSR))
     {
-        char directoryName[292];
-        sprintf(directoryName, "./data/line_%i/word_%i/", lineNumber, numberOfWord);
-        mkdir(directoryName, 0700);
+        mkdir(directoryName, S_IRWXO);
         fp = fopen(filename, "w");
     }
 
+    //printf("pos 1 = %u, pos2 = %u", pos1, pos2);
     for (unsigned int i = 0; i < height; i++)
     {
         for (unsigned int j = pos1; j < pos2; j++)
@@ -84,10 +94,12 @@ void cutWord(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
         nb++;
     }
     width = pos2 - pos1;
+    printf("nb = %u\n", nb);
     while (nb > 1)
     {
-        fputc(width / ((nb - 1) * 10) + 48, fp);
-        width %= 10;
+        fputc(width / (unsigned int)powl(10, (nb - 1)) + 48, fp);
+        printf("width = %u\n", width / (unsigned int) powl(10, (nb - 1)) );
+        width %= (unsigned int) powl(10, (nb - 1)) ;
         nb--;
     }
     fputc(width % 10 + 48, fp);
@@ -100,6 +112,9 @@ unsigned int wordSave(unsigned int list[], unsigned int matrix[], unsigned int w
     unsigned int pos2 = 1;
     unsigned int inAWord = 0;
     unsigned int numberOfWords = 0;
+
+    while (list[pos1] != 1)
+        pos1++;
 
     for (unsigned int k = 0; k < width; k++)
     {
