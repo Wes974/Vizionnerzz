@@ -179,7 +179,7 @@ void forwardPropagation(Network *net) {
         for (size_t j = 0; j < net->count_weight[1]; j++) {
             sum += net->computed[net->count_nr[0] + j] * net->weights[net->count_weight[0] * net->count_nr[1] + i * net->count_weight[1] + j];
         }
-        net->computed[net->count_nr[0] + net->count_nr[1] + i] = sum + net->bias[2];
+        net->computed[net->count_nr[0] + net->count_nr[1] + i] = sum + net->bias[net->count_nr[1] + i];
     }
 
     softmax(net);
