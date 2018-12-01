@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 int main(){
 
@@ -274,3 +276,18 @@ void softmax(Network *net) {
     }
 
 }
+
+// Save
+void saveNetwork(Network *net) {
+    FILE *saveFile;
+    saveFile = fopen("./network/save.txt", "w");
+
+    if(saveFile == NULL){
+        mkdir("./network", 0700);
+        saveFile = fopen("./network/save.txt", "w");
+    }
+
+    //TODO
+}
+
+// Load
