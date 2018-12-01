@@ -7,6 +7,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include <time.h>
 
 int main(){
@@ -50,8 +51,8 @@ int main(){
 
     net->computed[0] = 1;
     net->computed[1] = 1;
-    double w[6] = {1.0, -1.0, -1.0, 1.0, 1.0, 1.0};
-    net->weights = w;
+    /*double w[6] = {1.0, -1.0, -1.0, 1.0, 1.0, 1.0};
+    net->weights = w;*/
 
     forwardPropagation(net);
     printf("prop(1,1) = %f\n", net->computed[4]);
@@ -59,12 +60,20 @@ int main(){
     forwardPropagation(net);
     printf("prop(1,0) = %f\n", net->computed[4]);
 
-    backPropagation(net, expectedResults, 1, .1);
+    //backPropagation(net, expectedResults, 1, .1);
 
     //return 0;
     
-    size_t iter = 1000000;
+    size_t iter = 10000000;
+    //struct timespec t0, t1;
+    //clock_gettime(CLOCK_MONOTONIC, &t0);
     for (size_t i = 0; i < iter; i++) {
+        if (i % (iter / 10) == 0) {
+            //clock_gettime(CLOCK_MONOTONIC, &t1);
+            //printf("[%2g/10]: \t%g\n", i / (iter / 10), time_gdiff(t0, t1));
+            //clock_gettime(CLOCK_MONOTONIC, &t0);
+            printf("[%2g/10]\n",(double) i / (iter / 10));
+        }
         //printf("Iter %lu: ", i);
         for (size_t testIndex = 0; testIndex < testMaxCount; testIndex++) {
             //printf("%lu ", testIndex + 1);
@@ -76,64 +85,13 @@ int main(){
 
             // printf("\t i = %lu\n", i);
 
-    //////////////////////////////////
-    ////////// PROPAGATION ///////////
-    //////////////////////////////////
-
             forwardPropagation(net);
-
-    //////////////////////////////////
-    //////// BACKPROPAGATION /////////
-    //////////////////////////////////
-
             backPropagation(net, expectedResults, testIndex, trainingStep);
-
-            /*// 1 - Output error
-
-            double outputError = expectedResults[testIndex] - net->computed[4];
-
-            // 2 - Output weights
-            double w3 = trainingStep * outputError * net->computed[3] *
-                (1 - net->computed[4]) * net->computed[4];
-            double w2 = trainingStep * outputError * net->computed[2] *
-                (1 - net->computed[4]) * net->computed[4];
-
-            newWeights[7] += w3;
-            newWeights[6] += w2;
-            newBias[4] += trainingStep * outputError * net->computed[4] * 
-                (1 - net->computed[4]);
-
-            // 3 - Hidden layer errors
-            double hidden3Error = outputError * net->weights[7];
-            double hidden2Error = outputError * net->weights[6];
-
-            // 4 - Hidden layer weight
-            newWeights[5] += trainingStep * hidden3Error * net->computed[3] * 
-                (1 - net->computed[3]) * net->computed[1];
-            newWeights[4] += trainingStep * hidden3Error * net->computed[3] *
-                (1 - net->computed[3]) * net->computed[0];
-            newBias[3] += trainingStep * hidden3Error * net->computed[3] *
-                (1 - net->computed[3]);
-
-            newWeights[3] += trainingStep * hidden2Error * net->computed[2] *
-                (1 - net->computed[2]) * net->computed[1];
-            newWeights[2] += trainingStep * hidden2Error * net->computed[2] *
-                (1 - net->computed[2]) * net->computed[0];
-            newBias[2] += trainingStep * hidden2Error * net->computed[2] *
-                (1 - net->computed[2]);
-
-            for (size_t j = 2; j < 8; j++) {
-                net->weights[j] += newWeights[j];
-                newWeights[j] = 0;
-            }
-            for (size_t j = 2; j < 5; j++) {
-                net->bias[j] += newBias[j];
-                newBias[j] = 0;
-            }*/
         }
         //printf("\n");
 
     }
+    printf("[10/10]\n");
 
     //////////////////////////////////
     ////////// FINAL TESTS ///////////
