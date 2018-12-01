@@ -65,14 +65,18 @@ int main(){
     //return 0;
     
     size_t iter = 10000000;
-    //struct timespec t0, t1;
-    //clock_gettime(CLOCK_MONOTONIC, &t0);
+    
+    struct timespec t0, t1;
+    clock_gettime(CLOCK_MONOTONIC, &t0);
+    
     for (size_t i = 0; i < iter; i++) {
         if (i % (iter / 10) == 0) {
-            //clock_gettime(CLOCK_MONOTONIC, &t1);
-            //printf("[%2g/10]: \t%g\n", i / (iter / 10), time_gdiff(t0, t1));
-            //clock_gettime(CLOCK_MONOTONIC, &t0);
-            printf("[%2g/10]\n",(double) i / (iter / 10));
+            
+            clock_gettime(CLOCK_MONOTONIC, &t1);
+            printf("[%2g/10]: \t%f s\n", (double) i / (iter / 10), time_gdiff(t0, t1));
+            clock_gettime(CLOCK_MONOTONIC, &t0);
+        
+            // printf("[%2g/10]\n",(double) i / (iter / 10));
         }
         //printf("Iter %lu: ", i);
         for (size_t testIndex = 0; testIndex < testMaxCount; testIndex++) {
@@ -91,7 +95,9 @@ int main(){
         //printf("\n");
 
     }
-    printf("[10/10]\n");
+    clock_gettime(CLOCK_MONOTONIC, &t1);
+    printf("[10/10]: \t%f s\n", time_gdiff(t0, t1));
+
 
     //////////////////////////////////
     ////////// FINAL TESTS ///////////
