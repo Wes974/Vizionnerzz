@@ -7,7 +7,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
+//#include <assert.h>
 #include <time.h>
 
 int main(){
@@ -64,7 +64,7 @@ int main(){
 
     //return 0;
     
-    size_t iter = 10000000;
+    size_t iter = 1000000;
     //struct timespec t0, t1;
     //clock_gettime(CLOCK_MONOTONIC, &t0);
     for (size_t i = 0; i < iter; i++) {
@@ -116,6 +116,9 @@ int main(){
     net->computed[1] = 1;
     forwardPropagation(net);
     printf("(1, 1) = %f\n", net->computed[4]);
+
+    printArr(net->weights, net->count_nr[1] * (net->count_nr[0] + net->count_nr[2]), "weights");
+    printArr(net->bias, net->count_nr[1] + net->count_nr[2], "bias");
 
     return 0;
 }
