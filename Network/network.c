@@ -29,7 +29,7 @@ int main(){
     Network n;
     Network *net = &n;
 
-    unsigned int count_nr[] = {2, 2, 2}; 
+    unsigned int count_nr[] = {2, 10, 2}; 
 
     initNetwork(net, count_nr);
     
@@ -66,7 +66,7 @@ int main(){
 
     //return 0;
     
-    size_t iter = 10000000;
+    size_t iter = 1000000;
     
     struct timespec t0, t1;
     clock_gettime(CLOCK_MONOTONIC, &t0);
@@ -131,11 +131,14 @@ int main(){
     printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(1, 1)");
 
     printArr(net->weights, net->count_nr[1] * (net->count_nr[0] + net->count_nr[2]), "weights");
-    printArr(net->bias, net->count_nr[1] + net->count_nr[2], "bias");
+    printArr(net->bias, 2/*net->count_nr[1] + net->count_nr[2]*/, "bias");
 
     return 0;
 }
 
+    //////////////////////////////////
+    ///// Network Initialization //
+    //////////////////////////////////
 
 void initNetwork(Network *net, unsigned int *count_nr) {
     net->computed = calloc(count_nr[0] + count_nr[1] + count_nr[2], sizeof(double));
@@ -150,7 +153,7 @@ void initNetwork(Network *net, unsigned int *count_nr) {
         double r = (double)rand() / (double)(RAND_MAX / 5);
         net->weights[i] = r;
     }
-    for (size_t i = 0; i < count_nr[1] + count_nr[2]; i++) {
+    for (size_t i = 0; i < 2/*count_nr[1] + count_nr[2]*/; i++) {
         double r = (double)rand() / (double)(RAND_MAX / 5);        
         net->bias[i] = r;
     }
@@ -169,7 +172,7 @@ void forwardPropagation(Network *net) {
         for (size_t j = 0; j < net->count_weight[0]; j++) {
             sum += net->computed[j] * net->weights[i * net->count_weight[0] + j];
         }
-        net->computed[net->count_nr[0] + i] = sigmoid(sum + net->bias[i]);
+        net->computed[net->count_nr[0] + i] = sigmoid(sum + net->bias[/*i*/0]);
     }
 
     // Output Layer
@@ -179,7 +182,7 @@ void forwardPropagation(Network *net) {
         for (size_t j = 0; j < net->count_weight[1]; j++) {
             sum += net->computed[net->count_nr[0] + j] * net->weights[net->count_weight[0] * net->count_nr[1] + i * net->count_weight[1] + j];
         }
-        net->computed[net->count_nr[0] + net->count_nr[1] + i] = sum + net->bias[2];
+        net->computed[net->count_nr[0] + net->count_nr[1] + i] = sum + net->bias[/*net->count_nr[1] + i*/1];
     }
 
     softmax(net);
@@ -191,7 +194,7 @@ void forwardPropagation(Network *net) {
 
 void backPropagation(Network *net, double expectedResults[], size_t resStart, double trainingStep) {
     double newWeights[net->count_weight[0] * net->count_nr[1] + net->count_weight[1] * net->count_nr[2]];
-    double newBias[net->count_nr[1] + net->count_nr[2]];
+    double newBias[/*net->count_nr[1] + net->count_nr[2]*/2] = {0, 0};
     double outputErrors[net->count_nr[2]];
     double hiddenErrors[net->count_nr[1]];
     
@@ -219,7 +222,7 @@ void backPropagation(Network *net, double expectedResults[], size_t resStart, do
         double w = trainingStep * outputErrors[i];
         for (size_t j = 0; j < net->count_weight[1]; j++)
             newWeights[outputWeightPos + i * net->count_weight[1] + j] = w * net->computed[net->count_nr[0] + j];
-        newBias[net->count_nr[1] + i] = w;
+        newBias[/*net->count_nr[1] + i*/1] += w;
     }
 
     // 4 - Hidden new weights
@@ -228,14 +231,14 @@ void backPropagation(Network *net, double expectedResults[], size_t resStart, do
         double w = trainingStep * hiddenErrors[i];
         for (size_t j = 0; j < net->count_weight[0]; j++)
             newWeights[i * net->count_weight[0] + j] = w * net->computed[j];
-        newBias[i] = w;
+        newBias[/*i*/0] += w;
     }
 
     for (size_t i = 0; i < sizeof(newWeights) / sizeof(double); i++) {
         net->weights[i] += newWeights[i];
     }
     for (size_t i = 0; i < sizeof(newBias) / sizeof(double); i++) {
-        net->bias[i] += newBias[i];
+        net->bias[i] += newBias[i] / net->count_nr[i + 1];
     }
 }
 
