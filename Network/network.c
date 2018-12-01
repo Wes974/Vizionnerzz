@@ -130,6 +130,9 @@ int main(){
     // printf("(1, 1) = %f\n", net->computed[4]);
     printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(1, 1)");
 
+    printArr(net->weights, net->count_nr[1] * (net->count_nr[0] + net->count_nr[2]), "weights");
+    printArr(net->bias, net->count_nr[1] + net->count_nr[2], "bias");
+
     return 0;
 }
 
