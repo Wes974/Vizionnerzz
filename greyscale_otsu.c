@@ -5,7 +5,6 @@
 
 void grayscale(SDL_Surface *surf, Uint8 array[], size_t rows, size_t col)
 {
-    //printf("pixel = %u", get_pixel(surf, 0, 0));
     for(size_t i = 0; i < rows; i++)
     {
         for(size_t j = 0; j < col; j++)
@@ -13,10 +12,8 @@ void grayscale(SDL_Surface *surf, Uint8 array[], size_t rows, size_t col)
             Uint32 pixel = get_pixel(surf, j, i);
             Uint8 r, g, b;
             SDL_GetRGB(pixel, surf->format, &r, &g, &b);
-            //printf("%i ", pixel);
             array[i * col + j] = 0.3 * r + 0.59 * g + 0.11 * b;
         }
-        //printf("\n");
     }
 }
 
@@ -24,7 +21,6 @@ void grayscale(SDL_Surface *surf, Uint8 array[], size_t rows, size_t col)
 
 void create_Histo(Uint8 *image, size_t rows, size_t col, unsigned long *histo)
 {
-    //array_init(histo);
     for(size_t i = 0; i < rows; i++)
     {
         for(size_t j = 0; j < col; j++)
@@ -37,7 +33,6 @@ void create_Histo(Uint8 *image, size_t rows, size_t col, unsigned long *histo)
 
 void create_Histo2(unsigned int *image, size_t rows, size_t col, unsigned long *histo)
 {
-    //array_init(histo);
     for(size_t i = 0; i < rows; i++)
     {
         for(size_t j = 0; j < col; j++)

@@ -231,7 +231,7 @@ void segmentation(unsigned int *matrixPicture, unsigned int width, unsigned int 
 
                 //printf("height = %u, width = %u\n", charHeightNumber, charWidthNumber);
 
-                if (1){
+                if (superUser){
                     printf("\nLine number : %u\nWord number : %u\nChar number : %u\n", i, j, k);
                     for (unsigned int k = 0; k < charHeightNumber; k++)
                     {

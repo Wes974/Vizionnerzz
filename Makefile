@@ -1,10 +1,10 @@
 # Makefile
 
 CC=gcc
-CPPFLAGS=-MMD -D_XOPEN_SOURCE=500 `pkg-config --cflags sdl gtk+-3.0`
+CPPFLAGS=-MMD -D_XOPEN_SOURCE=500 `pkg-config --cflags sdl2 gtk+-3.0`
 ERROR_CFLAiR=-Wall -Wextra -std=c99 -g
 LDFLAGS=
-LDLIBS=`pkg-config --libs sdl gtk+-3.0` -lSDL_image -lm -export-dynamic -lm
+LDLIBS=`pkg-config --libs sdl2 gtk+-3.0` -lSDL2_image -lm -export-dynamic -lm
 
 SRC=    Main.c OCR.c wordSegmentation.c lineSegmentation.c charSegmentation.c greyscale_otsu.c for_show.c Basics.c segmentation.c
 

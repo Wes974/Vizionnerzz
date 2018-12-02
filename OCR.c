@@ -6,28 +6,15 @@
 
 #include "segmentation.h"
 
-void OCR(SDL_Surface *image, unsigned int superUser)
+void OCR(char *path, unsigned int superUser)
 {
     //Create and load the image file
-    /*SDL_Surface* image;
-    image = load_image("Images/image_text2BLACK.bmp");
+    SDL_Surface* image;
+    image = load_image(path);
     
-    for(size_t i = 0; i < image->h; i++)
-    {
-        for(size_t j = 0; j < image->w; j++)
-        {
-            Uint32 pixel = get_pixel(image, j, i);
-            Uint8 r, g, b;
-            SDL_GetRGB(pixel, image->format, &r, &g, &b);
-            printf("%i ", pixel);
-            //array[i * image->w + j] = 0.3 * r + 0.59 * g + 0.11 * b;
-        }
-        printf("\n");
-    }
-
     //Error if the file wasn't found
     if(image == NULL)
-        printf("Load failed: %s\n", SDL_GetError()); */
+        printf("Load failed: %s\n", SDL_GetError());
     
     //Get image size and initialize the image array
     int height = image->h;

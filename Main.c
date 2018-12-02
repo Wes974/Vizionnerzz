@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include "OCR.h"
 #include "Basics.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 
 /* Struct used to keep global variables */
 typedef struct
@@ -126,26 +124,8 @@ void callback_image(GtkButton *open, gpointer user_data)
 void callback_OCR(GtkButton *analyze, gpointer user_data)
 {
     SGlobalData *data = (SGlobalData*) user_data;
-
-    printf("%s\n", data->filename);
-
-    SDL_Surface* image;
-    image = load_image("Images/image_text2BLACK.bmp");
-    
-    for(size_t i = 0; i < image->h; i++)
-    {
-        for(size_t j = 0; j < image->w; j++)
-        {
-            Uint32 pixel = get_pixel(image, j, i);
-            Uint8 r, g, b;
-            SDL_GetRGB(pixel, image->format, &r, &g, &b);
-            printf("%i ", pixel);
-            //array[i * image->w + j] = 0.3 * r + 0.59 * g + 0.11 * b;
-        }
-        printf("\n");
-    }
-
-    OCR(image, data->showtime);
+ 
+    OCR(data->filename, data->showtime);
 
     GtkTextBuffer *buff = GTK_TEXT_BUFFER(gtk_builder_get_object(data->builder, "Buffer"));
 
