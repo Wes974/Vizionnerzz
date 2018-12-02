@@ -18,7 +18,7 @@ int main(){
 
     int trainingSet[] = {0, 0, 0, 1, 1, 0, 1, 1};
     double expectedResults[] = {0, 1, 1, 0, 1, 0, 0, 1};
-    double trainingStep = .01;
+    double trainingStep = 0.1;
 
     //////////////////////////////////
     ////////// NETWORK INIT //////////
@@ -96,7 +96,7 @@ int main(){
             clock_gettime(CLOCK_MONOTONIC, &t0);
 
             printf("training step = %f\n", trainingStep);
-
+            /*
             printf("Weights : ");
 
             for (size_t i = 0; i < net->count_weight[0] * net->count_nr[0] + net->count_weight[1] * net->count_nr[1] + net->count_weight[2] * net->count_nr[2]; i++)
@@ -118,7 +118,7 @@ int main(){
             }
 
             printf("\n");
-
+            */
             // printf("[%2g/10]\n",(double) i / (iter / 10));
         }
         //printf("Iter %lu: ", i);
@@ -192,16 +192,18 @@ void initNetwork(Network *net, unsigned int *count_nr) {
 
     for (size_t i = 0; i < count_nr[1] *(count_nr[0] + count_nr[2]) + count_nr[0]; i++)
     {
-        // double r = (double)rand() / (double)(RAND_MAX / 10);
+        double r = (double)rand() / (double)(RAND_MAX / 10);
         // double r = fmod((double) rand() / (double)RAND_MAX, 3) + (-1);
-        double r = (double)rand() / (double)RAND_MAX;
-        net->weights[i] = r;
+        // double r = (double)rand() / (double)RAND_MAX;        
+        // int r = rand() % 2;
+        net->weights[i] = r; // == 0 ? 1 : -1;
     }
     for (size_t i = 0; i < count_nr[0] + count_nr[1] + count_nr[2]; i++) {
-        // double r = (double)rand() / (double)(RAND_MAX / 10);
+        double r = (double)rand() / (double)(RAND_MAX / 10);
         // double r = fmod((double)rand() / (double)RAND_MAX, 3) + (-1);
-        double r = (double)rand() / (double)RAND_MAX;
-        net->bias[i] = r;
+        // double r = (double)rand() / (double)RAND_MAX;
+        // int r = rand() % 2;
+        net->bias[i] = r; // == 0 ? 1 : -1;
     }
 }
 
@@ -238,19 +240,19 @@ void forwardPropagation(Network *net) {
     }
 
     // softmax(net);
-}
 
+}
     //////////////////////////////////
     //////// BACKPROPAGATION /////////
     //////////////////////////////////
 
 void backPropagation(Network *net, double expectedResults[], size_t resStart, double trainingStep) {
-    
-    double newWeights[net->count_nr[1] * (net->count_nr[0] + net->count_nr[2]) + net->count_nr[0]];
-    double newBias[net->count_nr[0] + net->count_nr[1] + net->count_nr[2]];
+
+    // double newWeights[net->count_nr[1] * (net->count_nr[0] + net->count_nr[2]) + net->count_nr[0]];
+    // double newBias[net->count_nr[0] + net->count_nr[1] + net->count_nr[2]];
     double outputErrors[net->count_nr[2]];
     double hiddenErrors[net->count_nr[1]];
-    double inputErrors[net->count_nr[0]];
+    // double inputErrors[net->count_nr[0]];
 
     // 1 - Output Layer error and Hidden layer weight change:
     
@@ -264,16 +266,6 @@ void backPropagation(Network *net, double expectedResults[], size_t resStart, do
             e += -(target - output) * transferDeriv(output);
         }
         outputErrors[i] = e;
-    }
-
-        // 1.2 - Hidden layer weight update
-    
-    for (size_t i = 0; i < net->count_nr[2]; i++) {
-        for (size_t j = 0; j < net->count_nr[1]; j++) {
-            int pos = net->count_nr[0] * net->count_weight[0] + net->count_nr[1] * net->count_weight[1] + i * net->count_weight[2] + j;
-            printf("%i\n", pos);
-            net->weights[pos] = net->weights[pos] - trainingStep * outputErrors[i];
-        }
     }
     
     // 2 - Hidden layer error and Input layer weight change:
@@ -293,6 +285,15 @@ void backPropagation(Network *net, double expectedResults[], size_t resStart, do
         hiddenErrors[i] = e * outh * neth;
     }
 
+        // 1.2 - Hidden layer weight update
+    
+    for (size_t i = 0; i < net->count_nr[2]; i++) {
+        for (size_t j = 0; j < net->count_nr[1]; j++) {
+            int pos = net->count_nr[0] * net->count_weight[0] + net->count_nr[1] * net->count_weight[1] + i * net->count_weight[2] + j;
+            net->weights[pos] = net->weights[pos] - trainingStep * outputErrors[i];
+        }
+    }
+
         // 2.2 - Input layer weight update
     
     for (size_t i = 0; i < net->count_nr[1]; i++) {
@@ -301,8 +302,6 @@ void backPropagation(Network *net, double expectedResults[], size_t resStart, do
             net->weights[pos] = net->weights[pos] - trainingStep * hiddenErrors[i];
         }
     }
-
-    
 
     /*
 
