@@ -3,9 +3,10 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <math.h>
 
 unsigned int * matrixToListLine(unsigned int matrix[], unsigned int height, unsigned int width) {
-    unsigned int *list = calloc(width, sizeof(unsigned int));
+    unsigned int *list = calloc(height, sizeof(unsigned int));
 
     for(unsigned int i = 0; i < height; i++){
         unsigned int value = 0;
@@ -22,29 +23,39 @@ unsigned int * matrixToListLine(unsigned int matrix[], unsigned int height, unsi
 void cutLine(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsigned int width, unsigned int height, unsigned int numberOfLine){
 
     FILE *fp;
-    char filename[292];
+    char filename[22 + 10];
     sprintf(filename, "./data/line_%i/line_%i.txt", numberOfLine, numberOfLine);
 
     fp = fopen(filename, "w");
+    char directoryName[13+3];
+    sprintf(directoryName, "./data/line_%i/", numberOfLine);
 
-    if(fp == NULL){
-        char directoryname[292];
-        sprintf(directoryname, "./data/line_%i/", numberOfLine);
-        mkdir(directoryname, 0700);
+    if(!mkdir(directoryName, S_IRUSR | S_IWUSR | S_IXUSR)){
+        mkdir(directoryName, S_IRWXO);
         fp = fopen(filename, "w");
     }
 
-    for(unsigned int i = pos1; i < pos2; i++){
+    //printf("pos 1 = %u\npos2 = %u", pos1, pos2);
+    for(unsigned int i = pos1; i <= pos2; i++){
         for(unsigned int j = 0; j < width; j++){
             fputc(matrix[i*width+j] + 48, fp);
         }
     }
     fprintf(fp, " ");
     height = pos2 - pos1;
+    //printf("height = %u\n", height);
+    unsigned int nb = 0;
     while (height > 0){
-        fputc(height % 10 + 48, fp);
         height /= 10;
+        nb++;
     }
+    height = pos2 - pos1;
+    while (nb > 1){
+        fputc(height / (unsigned int)powl(10, (nb - 1)) + 48, fp);
+        height %= (unsigned int)powl(10, (nb - 1));
+        nb--;
+    }
+    fputc(height % 10 + 48, fp);
     fclose(fp);
 }
 

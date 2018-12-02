@@ -5,14 +5,12 @@
 #include <unistd.h>
 #include "wordSegmentation.h"
 
-unsigned int * matrixToListWord(unsigned int matrix[], unsigned int height, unsigned int width) {             //Convert a 2 dimensional matrix into a 1 dimensional List.
-    unsigned int size = sizeof(unsigned int);
-    unsigned int *list = calloc(width, size);
+unsigned int * matrixToListWord(unsigned int matrix[], unsigned int height, unsigned int width) {
+    unsigned int *list = calloc(width, sizeof(unsigned int));
     for(unsigned int j = 0; j < width; j++){
         unsigned int value = 0;
         for (unsigned int i = 0; i < height; i++){
-            if(matrix[i*width+j] == 1){   //If the column contain at least 1 black pixel, the corresponding position in the list is black.
-            //if(matrix[0] == 1){
+            if(matrix[i*width+j] == 1){
                 value = 1;
             }
         }
@@ -38,64 +36,96 @@ unsigned int thresholdDefine(unsigned int list[], unsigned int width){          
         
         }
     }
-    return num/denum;                                               //return the average between the number of white pixels and the number of spaces to find the 
-                                                                    //average space size.
+    //printf("%u, %u", num, denum);
+    if (denum == 0){
+        return 0;
+    }
+    return num/denum;
 }
 
-void cutWord(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsigned int width, unsigned int height, unsigned int numberOfWord, unsigned int lineNumber){             //use the position of the begining and the ned of a word and
-                                                                                                    //return the word (a matrix)
+void cutWord(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsigned int width, unsigned int height, unsigned int numberOfWord, unsigned int lineNumber){
     
     FILE *fp;
-    char filename[49];
+    char filename[292];
     sprintf(filename, "./data/line_%i/word_%i/word_%i.txt", lineNumber, numberOfWord, numberOfWord);
     fp = fopen(filename, "w");
-    /*
+
     if(fp == NULL){
-        //printf("no");
-        char directoryName[49];
+        char directoryName[292];
         sprintf(directoryName, "./data/line_%i/word_%i/", lineNumber, numberOfWord);
         mkdir(directoryName, 0700);
+        fp = fopen(filename, "w");
     }
-    */
-    for(unsigned int i = 0;i < height; i++){
+
+    for(unsigned int i = 0; i < height; i++){
         for(unsigned int j = pos1; j < pos2; j++){
-            //fputc(matrix[j*width+i] + 48, fp);
+            fputc(matrix[i*width+j] + 48, fp);
         }
-        //fprintf(fp, "\n");
     }
-    //fprintf(fp, " ");
+    fprintf(fp, " ");
+    width = pos2 - pos1;
     while (width > 0){
-        //fputc(width % 10 + 48, fp);
-        width /= 10;
+        fputc(width % 10 + 48, fp);
+        width  /= 10;
     } 
-    //fclose(fp);
-    
+    fclose(fp);
 }
 
-unsigned int wordSave(unsigned int threshold, unsigned int list[], unsigned int matrix[], unsigned int width, unsigned int height, unsigned int lineNumber){    //find the positions between the begining and the end of a 
-                                                                                                    //word and call the cut function to return the list containing
-                                                                                                    //all the word.
-    unsigned int pos1 = -1;
-    unsigned int pos2 = 0;
+unsigned int wordSave(unsigned int list[], unsigned int matrix[], unsigned int width, unsigned int height, unsigned int lineNumber){
+    unsigned int pos1 = 0;
+    unsigned int pos2 = 1;
     unsigned int inAWord = 0;
     unsigned int numberOfWords = 0;
+
     for(unsigned int k = 0; k < width; k++){
-        
-        if(list[k] == 1){
+        if(list[k] == 1 && !inAWord){
             inAWord = 1;
-            pos2 = k;
+            pos1 = k;
+        }
+        else if (list[k] == 1){
+            inAWord = 1;
+            pos2 = k; 
         }
         
-        if(list[k] == 0 && inAWord && pos2 - pos1 >= threshold){
-            cutWord(pos1 + 1, pos2 + 1, matrix, width, height, numberOfWords, lineNumber);
+        else if(list[k] == 0 && inAWord){
+            pos2 = k;
+            cutWord(pos1, pos2, matrix, width, height, numberOfWords, lineNumber);
             numberOfWords++;
-            pos1 = k;
-        }
-        else if(list[k] == 0){
-            pos1 = k;
             inAWord = 0;
         }
+        else if(list[k] == 0){
+            inAWord = 0;
+        }
+    }
+    if(inAWord){
+        cutWord(pos1, width, matrix, width, height, numberOfWords, lineNumber);
+        numberOfWords++;
     }
     return numberOfWords;
 }
 
+unsigned int *matrixWordSpace(unsigned int list[], unsigned int threshold, unsigned int width){
+    
+    unsigned int lastWord = 0;
+    unsigned int firstLetter = 0;
+    unsigned int inAWord = 0;
+    for(unsigned int i = 0; i < width; i++){
+        if (list[i] == 1){
+            if (!inAWord) {
+                firstLetter = i;
+                if (firstLetter - lastWord < threshold){
+                    for (unsigned int j = lastWord; j < firstLetter; j++){
+                        list[j] = 1;
+                    }
+                }
+            }
+            inAWord = 1;
+        } else {
+            if (inAWord){
+                lastWord = i;
+            }
+            inAWord = 0;
+        }
+    }
+    return list;
+}

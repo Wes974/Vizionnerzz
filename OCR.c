@@ -6,18 +6,11 @@
 
 #include "segmentation.h"
 
-int main(int argc, char** argv)
+void OCR(char *path, unsigned int superUser)
 {
-    //Get the path of the image file
-    char* param = argv[1];
-
-    //Error if there is more than 2 arguments
-    if(argc != 2)
-        errx(1, "Too many arguments");
-
     //Create and load the image file
     SDL_Surface* image;
-    image = load_image(param);
+    image = load_image(path);
     
     //Error if the file wasn't found
     if(image == NULL)
@@ -26,10 +19,12 @@ int main(int argc, char** argv)
     //Get image size and initialize the image array
     int height = image->h;
     int width = image->w;
+    //printf("h = %u, w = %u", height ,width);
     Uint8 *gray = calloc(height * width, sizeof(Uint8));
 
     //Grayscale the image array and reconvert it into a surface
     grayscale(image, gray, height, width);
+    //Print_Array(gray, width, height);
     SDL_Surface* b_image;
     b_image = Matrix_2_Surface(gray, height, width);
     
@@ -43,7 +38,7 @@ int main(int argc, char** argv)
 
 
     //SEGMENTATION//
-    segmentation(otsu_array, width, height, 1);
+    segmentation(otsu_array, width, height, superUser);
     
     //NETWORK//
    
@@ -78,7 +73,8 @@ int main(int argc, char** argv)
 
             FILE *char_info;
             char charFilename[32 + 5];
-            sprintf(charFilename, "./data/line_%u/word_%u/char_info.txt", line, word);
+            sprintf(charFilename, "./data/line_%u/word_%u/char_info.txt", 
+                                                                    line, word);
             char_info = fopen(charFilename, "r");
             unsigned int lolchar = 0;
             unsigned int *numberOfChar = &lolchar;
@@ -93,7 +89,8 @@ int main(int argc, char** argv)
                 
                 FILE *charFile;
                 char charFilename[255];
-                sprintf(charFilename, "./data/line_%i/word_%i/char_%i.txt", line, word, chara);
+                sprintf(charFilename, "./data/line_%i/word_%i/char_%i.txt", 
+                                                            line, word, chara);
                 charFile = fopen(charFilename, "r");
                 char charMatrixChar[255];
                 fscanf(charFile, "%s", charMatrixChar);
@@ -120,7 +117,7 @@ int main(int argc, char** argv)
 
                 //NETWORK
                 //char letter = network(...);
-                //fputc(letter, result);
+                fputc(97, result);
 
                 
             }
@@ -137,17 +134,7 @@ int main(int argc, char** argv)
     
     //Free the image array memory
     free(gray);
-    
-    //Convert the binarized array into a surface
-    //SDL_Surface* f_image;
-    //f_image = Matrix_2_Surface(otsu_array, height, width);
-
-    //Print_Array(gray, height, width);
 
     //Free the binarized array memory
     free(otsu_array);
-
-    //Convert the binarized surface into a .bmp file
-    //Make_A_File(f_image, "results/binarized.bmp");
-    return 0;
 }
