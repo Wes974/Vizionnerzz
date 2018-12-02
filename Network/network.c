@@ -17,7 +17,8 @@ char compute(double matrix[]) {
 
     Network *net;
 
-    // Load
+    loadNetwork(net);
+
     for (size_t i = 0; i < 100; i++) {
         net->computed[i] = matrix[i];
     }
@@ -124,20 +125,22 @@ int main(){
     //////////////////////////////////
     ////////// FINAL TESTS ///////////
     //////////////////////////////////
-    printArr(net->computed, net->count_nr[2] + net->count_nr[1] \
-                            + net->count_nr[0], "computed Before");
+    /*printArr(net->computed, net->count_nr[2] + net->count_nr[1] \
+                            + net->count_nr[0], "computed Before");*/
 
     for (size_t i = 26; i < 36; i++) {
         testNetwork(net, trainingSet + i * in, expectedResults \
                                     + (i * 36), expectedChar, 1);
     }
-    printArr(net->computed, net->count_nr[2] + net->count_nr[1] \
+    /*printArr(net->computed, net->count_nr[2] + net->count_nr[1] \
                             + net->count_nr[0], "computed After");
     printArr(net->weights, net->count_nr[1] * (net->count_nr[0] \
                                     + net->count_nr[2]), "weights");
-    printArr(net->bias, net->count_nr[1] + net->count_nr[2], "bias");
+    printArr(net->bias, net->count_nr[1] + net->count_nr[2], "bias");*/
 
     saveNetwork(net);
+
+    //printf("Compute 0: %c", compute(trainingSet + 26 * in));
     
     return 0;
 }
