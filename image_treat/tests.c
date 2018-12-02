@@ -39,6 +39,7 @@ int main(int argc, char** argv)
     //Initialize the otsu array and binarize the image array
     unsigned int *otsu_array = calloc(height * width, sizeof(unsigned int));
     otsu(gray, otsu_array, height, width);
+    blackOrWhite(otsu_array, height, width);
 
 
     //SEGMENTATION//
