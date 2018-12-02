@@ -43,31 +43,61 @@ int main(int argc, char** argv)
 
 
     //SEGMENTATION//
-    segmentation(otsu_array, width, height);
+    segmentation(otsu_array, width, height, 1);
     
     //NETWORK//
-    /*
+   
     //Create the file result.txt
     FILE *result;
     result = fopen("./data/result.txt", "w");
    
-    unsigned int numberOfLine = (unsigned int)system("ls -l data/|wc -l") - 1; 
-    for (unsigned int line = 0; line < numberOfLine; line++) {
-        char wordFilename[255];
-        sprintf(wordFilename, "ls -l data/line_%i|wc -l", line);
-        unsigned int numberOfWord = (unsigned int)system(wordFilename) - 1;
-        for (unsigned int word = 0; word < numberOfWord; word++) {
-            char charFilename[255];
-            sprintf(charFilename, "ls -l data/line_%i/word_%i|wc -l", line, word);
-            unsigned int numberOfChar = (unsigned int)system(charFilename) - 1;
-            for (unsigned int chara = 0; chara < numberOfChar; chara++) {
+    //Get the number of line
+    FILE *line_info;
+    line_info = fopen("./data/line_info.txt", "r");
+    unsigned int lol = 0;
+    unsigned int *numberOfLine = &lol;
+    fscanf(line_info, "%u", numberOfLine);
+    fclose(line_info);
+    remove("./data/line_info.txt");
+    //printf("line = %u\n", *numberOfLine);
+
+    for (unsigned int line = 0; line < *numberOfLine; line++) {
+        
+        FILE *word_info;
+        char wordFilename[26 + 3];
+        sprintf(wordFilename, "./data/line_%u/word_info.txt", line);
+        word_info = fopen(wordFilename, "r");
+        unsigned int lolword = 0;
+        unsigned int *numberOfWord = &lolword;
+        fscanf(word_info, "%u", numberOfWord);
+        fclose(word_info);
+        remove(wordFilename);
+        //printf("word = %u\n", *numberOfWord);
+
+        for (unsigned int word = 0; word < *numberOfWord; word++) {
+
+            FILE *char_info;
+            char charFilename[32 + 5];
+            sprintf(charFilename, "./data/line_%u/word_%u/char_info.txt", line, word);
+            char_info = fopen(charFilename, "r");
+            unsigned int lolchar = 0;
+            unsigned int *numberOfChar = &lolchar;
+            fscanf(char_info, "%u", numberOfChar);
+            fclose(char_info);
+            remove(charFilename);
+            //printf("char = %u\n", *numberOfChar);
+   
+
+            for (unsigned int chara = 0; chara < *numberOfChar; chara++) {
                 //Get the char matrix width .txt
+                
                 FILE *charFile;
                 char charFilename[255];
                 sprintf(charFilename, "./data/line_%i/word_%i/char_%i.txt", line, word, chara);
                 charFile = fopen(charFilename, "r");
                 char charMatrixChar[255];
                 fscanf(charFile, "%s", charMatrixChar);
+                fclose(char_info);
                 
                 unsigned int *charMatrix = calloc(255, sizeof(unsigned int));
                 unsigned int *p = charMatrix;
@@ -94,15 +124,17 @@ int main(int argc, char** argv)
 
                 
             }
-            if (word != numberOfWord){
+            if (word != *numberOfWord){
                 fprintf(result, " ");
             }
         }
-        if (line != numberOfLine){
+        if (line != *numberOfLine){
             fprintf(result, "\n");
         }
+        
     }
-    */
+    fclose(result);
+    
     //Free the image array memory
     free(gray);
     
@@ -117,6 +149,5 @@ int main(int argc, char** argv)
 
     //Convert the binarized surface into a .bmp file
     //Make_A_File(f_image, "results/binarized.bmp");
-    
     return 0;
 }

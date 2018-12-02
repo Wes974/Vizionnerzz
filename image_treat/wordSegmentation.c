@@ -94,11 +94,11 @@ void cutWord(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
         nb++;
     }
     width = pos2 - pos1;
-    printf("nb = %u\n", nb);
+    //printf("nb = %u\n", nb);
     while (nb > 1)
     {
         fputc(width / (unsigned int)powl(10, (nb - 1)) + 48, fp);
-        printf("width = %u\n", width / (unsigned int) powl(10, (nb - 1)) );
+        //printf("width = %u\n", width / (unsigned int) powl(10, (nb - 1)) );
         width %= (unsigned int) powl(10, (nb - 1)) ;
         nb--;
     }

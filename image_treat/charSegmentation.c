@@ -241,7 +241,7 @@ unsigned int *trimVertical(unsigned int *matrix, unsigned int *width, unsigned i
         }
     }
     free(xList);
-    printf("\njn = %u\n", jn);
+    //printf("\njn = %u\n", jn);
     unsigned int *realNewMatrix = calloc(height * jn, sizeof(unsigned int));
     for (unsigned i = 0; i < height; i++)
     {
