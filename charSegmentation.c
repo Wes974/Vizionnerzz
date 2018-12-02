@@ -5,7 +5,8 @@
 #include <math.h>
 
 //Get the corresponding list according to the character currently analysed
-unsigned int *matrixToListChar(unsigned int matrix[], unsigned int height, unsigned int width)
+unsigned int *matrixToListChar(unsigned int matrix[], unsigned int height, 
+                                                            unsigned int width)
 {
     unsigned int *list = calloc(width, sizeof(unsigned int));
     for (unsigned int j = 0; j < width; j++)
@@ -24,7 +25,8 @@ unsigned int *matrixToListChar(unsigned int matrix[], unsigned int height, unsig
 }
 
 //Same than before but with the y axis
-unsigned int *matrixToListCharTransposed(unsigned int matrix[], unsigned int height, unsigned int width)
+unsigned int *matrixToListCharTransposed(unsigned int matrix[], 
+                                    unsigned int height, unsigned int width)
 {
     unsigned int *list = calloc(height, sizeof(unsigned int));
     for (unsigned int i = 0; i < height; i++)
@@ -43,9 +45,11 @@ unsigned int *matrixToListCharTransposed(unsigned int matrix[], unsigned int hei
 }
 
 //Resize the given matrix to the corresponding lengths
-unsigned int *resize(unsigned int *matrix, unsigned int width, unsigned int height, unsigned int newWidth, unsigned int newHeight)
+unsigned int *resize(unsigned int *matrix, unsigned int width, 
+            unsigned int height, unsigned int newWidth, unsigned int newHeight)
 {
-    unsigned int *newMatrix = calloc(newWidth * newHeight, sizeof(unsigned int));
+    unsigned int *newMatrix = calloc(newWidth * newHeight, 
+                                                        sizeof(unsigned int));
     float ratioX = (float)width / (float)newWidth;
     float ratioY = (float)height / (float)newHeight;
     unsigned int in = 0;
@@ -65,16 +69,21 @@ unsigned int *resize(unsigned int *matrix, unsigned int width, unsigned int heig
 }
 
 //Save the char to the corresponding path with pos1 and pos2 being the begining and the end of the char
-void cutChar(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsigned int width, unsigned int height, unsigned int numberOfLine, unsigned int numberOfWord, unsigned int numberOfChar, unsigned int newWidth, unsigned int newHeight)
+void cutChar(unsigned int pos1, unsigned int pos2, unsigned int matrix[], 
+    unsigned int width, unsigned int height, unsigned int numberOfLine, 
+        unsigned int numberOfWord, unsigned int numberOfChar, 
+            unsigned int newWidth, unsigned int newHeight)
 {
     unsigned int *newMatrix = calloc(width * height, sizeof(unsigned int));
 
     FILE *fp;
     char filename[28+10+1];
-    sprintf(filename, "./data/line_%i/word_%i/char_%i.txt", numberOfLine, numberOfWord, numberOfChar);
+    sprintf(filename, "./data/line_%i/word_%i/char_%i.txt", numberOfLine, 
+                                                    numberOfWord, numberOfChar);
     fp = fopen(filename, "w");
     char directoryName[19+6+1];
-    sprintf(directoryName, "./data/line_%i/word_%i/", numberOfLine, numberOfWord);
+    sprintf(directoryName, "./data/line_%i/word_%i/", numberOfLine, 
+                                                                numberOfWord);
 
     if (!mkdir(directoryName, S_IRUSR | S_IWUSR | S_IXUSR))
     {
@@ -94,7 +103,8 @@ void cutChar(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
 
     unsigned int *pointerHeight = &height;
     unsigned int *realNewMatrix = trim(newMatrix, pos2 - pos1, pointerHeight);
-    unsigned int *finalMatrix = resize(realNewMatrix, pos2 -pos1, height, newWidth, newHeight);
+    unsigned int *finalMatrix = resize(realNewMatrix, pos2 -pos1, height, 
+                                                        newWidth, newHeight);
 
     for (unsigned int i = 0; i < newHeight; i++)
     {
@@ -155,7 +165,9 @@ void cutChar(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
 }
 
 //Find the coordinates of the diiferents char in the word
-unsigned int charSave(unsigned int list[], unsigned int matrix[], unsigned int width, unsigned int height, unsigned int numberOfLine, unsigned int numberOfWord, unsigned int newWidth, unsigned int newHeight)
+unsigned int charSave(unsigned int list[], unsigned int matrix[], 
+    unsigned int width, unsigned int height, unsigned int numberOfLine, 
+    unsigned int numberOfWord, unsigned int newWidth, unsigned int newHeight)
 {
     unsigned int pos1 = 0;
     unsigned int pos2 = 1;
@@ -178,7 +190,8 @@ unsigned int charSave(unsigned int list[], unsigned int matrix[], unsigned int w
         else if (list[k] == 0 && inAChar)
         {
             pos2 = k;
-            cutChar(pos1, pos2, matrix, width, height, numberOfLine, numberOfWord, numberOfChar, newWidth, newHeight);
+            cutChar(pos1, pos2, matrix, width, height, numberOfLine, 
+                            numberOfWord, numberOfChar, newWidth, newHeight);
             numberOfChar++;
             inAChar = 0;
         }
@@ -190,7 +203,8 @@ unsigned int charSave(unsigned int list[], unsigned int matrix[], unsigned int w
 
     if (inAChar)
     {
-        cutChar(pos1, width, matrix, width, height, numberOfLine, numberOfWord, numberOfChar, newWidth, newHeight);
+        cutChar(pos1, width, matrix, width, height, numberOfLine, 
+                            numberOfWord, numberOfChar, newWidth, newHeight);
         numberOfChar++;
     }
 
@@ -198,7 +212,8 @@ unsigned int charSave(unsigned int list[], unsigned int matrix[], unsigned int w
 }
 
 //Cut the blank top and the bottom of a matrix
-unsigned int *trim(unsigned int *matrix, unsigned int width, unsigned int *height)
+unsigned int *trim(unsigned int *matrix, unsigned int width, 
+                                                        unsigned int *height)
 {
     unsigned int *yList = matrixToListCharTransposed(matrix, *height, width);
     unsigned int *newMatrix = calloc(width * (*height), sizeof(unsigned int));
@@ -235,7 +250,8 @@ unsigned int *trim(unsigned int *matrix, unsigned int width, unsigned int *heigh
 }
 
 //Cut the blank left and right parts of a matrix
-unsigned int *trimVertical(unsigned int *matrix, unsigned int *width, unsigned int height)
+unsigned int *trimVertical(unsigned int *matrix, unsigned int *width, 
+                                                            unsigned int height)
 {
     unsigned int *xList = matrixToListChar(matrix, height, *width);
     unsigned int *newMatrix = calloc(height * (*width), sizeof(unsigned int));

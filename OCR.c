@@ -73,7 +73,8 @@ void OCR(char *path, unsigned int superUser)
 
             FILE *char_info;
             char charFilename[32 + 5];
-            sprintf(charFilename, "./data/line_%u/word_%u/char_info.txt", line, word);
+            sprintf(charFilename, "./data/line_%u/word_%u/char_info.txt", 
+                                                                    line, word);
             char_info = fopen(charFilename, "r");
             unsigned int lolchar = 0;
             unsigned int *numberOfChar = &lolchar;
@@ -88,7 +89,8 @@ void OCR(char *path, unsigned int superUser)
                 
                 FILE *charFile;
                 char charFilename[255];
-                sprintf(charFilename, "./data/line_%i/word_%i/char_%i.txt", line, word, chara);
+                sprintf(charFilename, "./data/line_%i/word_%i/char_%i.txt", 
+                                                            line, word, chara);
                 charFile = fopen(charFilename, "r");
                 char charMatrixChar[255];
                 fscanf(charFile, "%s", charMatrixChar);
@@ -132,17 +134,7 @@ void OCR(char *path, unsigned int superUser)
     
     //Free the image array memory
     free(gray);
-    
-    //Convert the binarized array into a surface
-    //SDL_Surface* f_image;
-    //f_image = Matrix_2_Surface(otsu_array, height, width);
-
-    //Print_Array(gray, height, width);
 
     //Free the binarized array memory
     free(otsu_array);
-
-    //Convert the binarized surface into a .bmp file
-    //Make_A_File(f_image, "results/binarized.bmp");
-    //return 0;
 }

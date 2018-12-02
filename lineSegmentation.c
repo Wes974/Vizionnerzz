@@ -6,7 +6,8 @@
 #include <math.h>
 
 //Get the corresponding list according to the line currently analysed
-unsigned int * matrixToListLine(unsigned int matrix[], unsigned int height, unsigned int width) {
+unsigned int * matrixToListLine(unsigned int matrix[], unsigned int height, 
+                                                        unsigned int width) {
     unsigned int *list = calloc(height, sizeof(unsigned int));
 
     for(unsigned int i = 0; i < height; i++){
@@ -22,7 +23,8 @@ unsigned int * matrixToListLine(unsigned int matrix[], unsigned int height, unsi
 }
 
 //Save the line to the corresponding path with pos1 and pos2 being the begining and the end of the line
-void cutLine(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsigned int width, unsigned int height, unsigned int numberOfLine){
+void cutLine(unsigned int pos1, unsigned int pos2, unsigned int matrix[], 
+            unsigned int width, unsigned int height, unsigned int numberOfLine){
 
     FILE *fp;
     char filename[22 + 10];
@@ -62,8 +64,8 @@ void cutLine(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
 }
 
 //Find the coordinates of the diiferents line in the image
-unsigned int lineSave(unsigned int list[], unsigned int matrix[], unsigned int width, unsigned int height){
-    printf("ttt");
+unsigned int lineSave(unsigned int list[], unsigned int matrix[], 
+                                    unsigned int width, unsigned int height){
     unsigned int pos1 = 0;
     unsigned int pos2 = 1;
     unsigned int inALine = 0;

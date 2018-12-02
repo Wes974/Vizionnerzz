@@ -7,7 +7,8 @@
 #include <math.h>
 
 //Get the corresponding list according to the word currently analysed
-unsigned int *matrixToListWord(unsigned int matrix[], unsigned int height, unsigned int width)
+unsigned int *matrixToListWord(unsigned int matrix[], unsigned int height, 
+                                                            unsigned int width)
 {
     unsigned int *list = calloc(width, sizeof(unsigned int));
     for (unsigned int j = 0; j < width; j++)
@@ -65,12 +66,15 @@ unsigned int thresholdDefine(unsigned int list[], unsigned int width)
 }
 
 //Save the word to the corresponding path with pos1 and pos2 being the begining and the end of the word
-void cutWord(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsigned int width, unsigned int height, unsigned int numberOfWord, unsigned int lineNumber)
+void cutWord(unsigned int pos1, unsigned int pos2, unsigned int matrix[], 
+    unsigned int width, unsigned int height, unsigned int numberOfWord, 
+        unsigned int lineNumber)
 {
 
     FILE *fp;
     char filename[28 + 10];
-    sprintf(filename, "./data/line_%i/word_%i/word_%i.txt", lineNumber, numberOfWord, numberOfWord);
+    sprintf(filename, "./data/line_%i/word_%i/word_%i.txt", lineNumber, 
+                                                    numberOfWord, numberOfWord);
     char directoryName[19 + 8];
     sprintf(directoryName, "./data/line_%i/word_%i/", lineNumber, numberOfWord);
     fp = fopen(filename, "w");
@@ -110,7 +114,8 @@ void cutWord(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
 }
 
 //Find the coordinates of the diiferents words in the line
-unsigned int wordSave(unsigned int list[], unsigned int matrix[], unsigned int width, unsigned int height, unsigned int lineNumber)
+unsigned int wordSave(unsigned int list[], unsigned int matrix[], 
+            unsigned int width, unsigned int height, unsigned int lineNumber)
 {
     unsigned int pos1 = 0;
     unsigned int pos2 = 1;
@@ -136,7 +141,8 @@ unsigned int wordSave(unsigned int list[], unsigned int matrix[], unsigned int w
         else if (list[k] == 0 && inAWord)
         {
             pos2 = k;
-            cutWord(pos1, pos2, matrix, width, height, numberOfWords, lineNumber);
+            cutWord(pos1, pos2, matrix, width, height, numberOfWords, 
+                                                                    lineNumber);
             numberOfWords++;
             inAWord = 0;
         }
@@ -153,7 +159,8 @@ unsigned int wordSave(unsigned int list[], unsigned int matrix[], unsigned int w
     return numberOfWords;
 }
 
-unsigned int *matrixWordSpace(unsigned int list[], unsigned int threshold, unsigned int width)
+unsigned int *matrixWordSpace(unsigned int list[], unsigned int threshold, 
+                                                            unsigned int width)
 {
 
     unsigned int lastWord = 0;

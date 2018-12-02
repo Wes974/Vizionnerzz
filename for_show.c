@@ -13,7 +13,8 @@ SDL_Surface* Matrix_2_Surface(Uint8 array[], size_t rows, size_t col)
         for(size_t j = 0; j < col; j++)
         {       
             Uint8 color = array[i * col + j];
-            Uint32 newPixel = SDL_MapRGB(image_surface->format, color, color, color);
+            Uint32 newPixel = SDL_MapRGB(image_surface->format, color, color, 
+                                                                        color);
             put_pixel(image_surface, j, i, newPixel);
         }
     }

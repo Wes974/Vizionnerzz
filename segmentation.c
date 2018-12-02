@@ -31,7 +31,6 @@ void putIntInAFile(FILE *file, unsigned int number){
 //The whole segmentation
 void segmentation(unsigned int *matrixPicture, unsigned int width, unsigned int height, unsigned int superUser)
 {
-    printf("su = %u", superUser);
     system("rm -rf data");
     if (!mkdir("./data", S_IRUSR | S_IWUSR | S_IXUSR))
     {

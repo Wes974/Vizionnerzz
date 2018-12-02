@@ -31,7 +31,8 @@ void create_Histo(Uint8 *image, size_t rows, size_t col, unsigned long *histo)
     }
 }
 
-void create_Histo2(unsigned int *image, size_t rows, size_t col, unsigned long *histo)
+void create_Histo2(unsigned int *image, size_t rows, size_t col, 
+                                                        unsigned long *histo)
 {
     for(size_t i = 0; i < rows; i++)
     {
