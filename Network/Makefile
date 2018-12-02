@@ -1,9 +1,9 @@
 # Network Makefile
 
 CPPFLAGS = -MMD
-CC = gcc -fsanitize=address
-CFLAGS = -Wall -Wextra -std=c99 -O3 -D_POSIX_C_SOURCE=199309L -pedantic -fsanitize=address
-LDFLAGS = -fsanitize=address
+CC = gcc 
+CFLAGS = -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=199309L -g -pedantic
+LDFLAGS =
 LDLIBS = -lm
 
 SRC = network.c
