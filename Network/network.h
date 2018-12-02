@@ -23,7 +23,8 @@ struct Network {
 };
 
 void forwardPropagation(Network  *net);
-void backPropagation(Network *net, double expectedResults[], size_t resStart, double trainingStep);
+void backPropagation(Network *net, double expectedResults[], size_t resStart, \
+                                                          double trainingStep);
 void initNetwork(Network *net, unsigned int *count_nr);
 
 static inline
@@ -37,7 +38,8 @@ double sigmoid(double z);
 double transferDeriv(double x);
 void softmax(Network *net);
 void printArr(double arr[], size_t count, char name[]);
-int testNetwork(Network *net, double *input, double *expectedResult, char *charList, int print);
+int testNetwork(Network *net, double *input, double *expectedResult, \
+                                                    char *charList, int print);
 void saveNetwork(Network *net) ;
 
 #endif
