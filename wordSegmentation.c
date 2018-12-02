@@ -6,6 +6,7 @@
 #include "wordSegmentation.h"
 #include <math.h>
 
+//Get the corresponding list according to the word currently analysed
 unsigned int *matrixToListWord(unsigned int matrix[], unsigned int height, unsigned int width)
 {
     unsigned int *list = calloc(width, sizeof(unsigned int));
@@ -24,6 +25,7 @@ unsigned int *matrixToListWord(unsigned int matrix[], unsigned int height, unsig
     return list;
 }
 
+//Define the threshold differencing the space between characters and the space between words
 unsigned int thresholdDefine(unsigned int list[], unsigned int width)
 {
     unsigned int num = 0;
@@ -62,6 +64,7 @@ unsigned int thresholdDefine(unsigned int list[], unsigned int width)
     return num / denum;
 }
 
+//Save the word to the corresponding path with pos1 and pos2 being the begining and the end of the word
 void cutWord(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsigned int width, unsigned int height, unsigned int numberOfWord, unsigned int lineNumber)
 {
 
@@ -106,6 +109,7 @@ void cutWord(unsigned int pos1, unsigned int pos2, unsigned int matrix[], unsign
     fclose(fp);
 }
 
+//Find the coordinates of the diiferents words in the line
 unsigned int wordSave(unsigned int list[], unsigned int matrix[], unsigned int width, unsigned int height, unsigned int lineNumber)
 {
     unsigned int pos1 = 0;

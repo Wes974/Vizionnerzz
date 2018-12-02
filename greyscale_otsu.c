@@ -98,7 +98,6 @@ unsigned char otsu_threshold(Uint8 array[], size_t rows, size_t col)
 void otsu(Uint8 image[], unsigned int b_image[], size_t rows, size_t col)
 {
     Uint8 threshold = otsu_threshold(image, rows, col);
-    //printf("threshold = %u\n", threshold);
     
     for(size_t i = 0; i < rows; i++)
     {
@@ -116,9 +115,7 @@ void blackOrWhite(unsigned int image[], size_t rows, size_t col)
 {
     unsigned long *histo = calloc(2, sizeof(unsigned long));
     create_Histo2(image, rows, col, histo);
-    //for(size_t k = 0; k < 2; k++)
-        //printf("%lu ", histo[k]);
-    //printf("\n");
+
     if(histo[0] < histo[1])
     {
         for(size_t i = 0; i < rows; i++)
@@ -126,10 +123,8 @@ void blackOrWhite(unsigned int image[], size_t rows, size_t col)
             for(size_t j = 0; j < col; j++)
             {
                 image[i * col + j] = !image[i * col + j];
-                //printf("%u", image[i * col + j]);
             }
 
-            //printf("\n");
         }
 
     }
