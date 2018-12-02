@@ -24,6 +24,8 @@ struct Network {
     double *deltaWeightIn2Hid;
     double *deltaWeightHid2Out;
 
+    double *deltaBias;
+
     double global_error;
 
     int *inputs;
