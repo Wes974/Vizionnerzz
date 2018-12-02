@@ -34,6 +34,7 @@ char compute(double matrix[]) {
     return "abcdefghijklmnopqrstuvwxyz0123456789"[max];
 }
 
+
 int main(){
 
     //////////////////////////////////
@@ -120,7 +121,6 @@ int main(){
     printf("[10/10]: \t%fs\n", time_gdiff(t0, t1));
     totalTime += time_gdiff(t0, t1);
     printf("Total time: \t%fs\n", totalTime);
-
 
     //////////////////////////////////
     ////////// FINAL TESTS ///////////
