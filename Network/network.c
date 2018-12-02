@@ -60,13 +60,7 @@ int main(){
     //          [i -> 0, i -> 1, 0 -> 2, 0 -> 3, 1 -> 2, 1 -> 3, 2 -> 4, 3 -> 4]
 
 
-    // net->computed[0] = 1;
-    // net->computed[1] = 1;
-
     net->inputs = (trainingSet + 3 * net->count_nr[0]);
-
-    /*double w[6] = {1.0, -1.0, -1.0, 1.0, 1.0, 1.0};
-    net->weights = w;*/
 
     forwardPropagation(net);
     //printf("prop(1,1) = %f\n", net->computed[4]);
@@ -79,10 +73,6 @@ int main(){
     printf("(%i, %i)", net->inputs[0], net->inputs[1]); // (1, 0)
     printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "");
 
-    //backPropagation(net, expectedResults, 1, .1);
-
-    //return 0;
-
     size_t iter = 1000000;  //10000000;
 
     struct timespec t0, t1;
@@ -90,9 +80,7 @@ int main(){
     printf("Training %lu times with %f training step\n", iter, trainingStep);
     for (size_t i = 0; i < iter; i++)
     {
-
-        // trainingStep -= 0.0000001;
-
+        
         if (net->global_error < 0.001)
             break;
 
@@ -138,7 +126,6 @@ int main(){
     return 0;
 }
 
-
 void initNetwork(Network *net, unsigned int *count_nr) {
     
     net->computed = calloc(count_nr[0] + count_nr[1] + count_nr[2], sizeof(double));
@@ -155,11 +142,9 @@ void initNetwork(Network *net, unsigned int *count_nr) {
     net->count_weight[2] = count_nr[1];
 
     double deltaBias[count_nr[0] + count_nr[1] + count_nr[2]];
-
     for (size_t i = 0; i < count_nr[0] + count_nr[1] + count_nr[2]; i++) {
         deltaBias[i] = 0.0;
     }
-
     net->deltaBias = deltaBias;
 
     int nbIn2Hid = count_nr[0] * net->count_weight[0] + count_nr[1] * net->count_weight[1];
@@ -167,15 +152,12 @@ void initNetwork(Network *net, unsigned int *count_nr) {
 
     double deltaWeightIn2Hid[nbIn2Hid];
     double deltaWeightHid2Out[nbHid2Out];
-
     for (int i = 0; i < nbIn2Hid; i++) {
         deltaWeightIn2Hid[i] = 0.0;
     }
-
     for (int i = 0; i < nbHid2Out; i++) {
         deltaWeightHid2Out[i] = 0.0;
     }
-
     net->deltaWeightIn2Hid = deltaWeightIn2Hid;
     net->deltaWeightHid2Out = deltaWeightHid2Out;
 
@@ -231,19 +213,6 @@ void forwardPropagation(Network *net) {
 void backPropagation(Network *net, double expectedResults[], size_t resStart, double trainingStep) {
 
     double alpha = 0.9;
-    
-    // for (size_t i = 0; i < net->count_nr[2]; i++) {
-    //     double e = 0.0;
-    //     // printf("count_nr[2] = %lu\n", net->count_nr[2]);
-    //     for (size_t j = 0; j < 1; j++)
-    //     {
-    //         double target = expectedResults[resStart + i];
-    //         double output = net->computed[net->count_nr[0] + net->count_nr[1] + i];
-    //         e += (target - output) * transferDeriv(output);
-    //         net->global_error += 0.5 * (target - output) * (target - output);
-    //     }
-    //     net->outputErrors[i] = e;   // Delta Output
-    // }
 
     for (size_t i = 0; i < net->count_nr[2]; i++) {
         double target = expectedResults[resStart + i];
