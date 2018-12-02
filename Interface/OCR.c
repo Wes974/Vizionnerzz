@@ -1,33 +1,34 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 
+/* Struct used to keep global variables */
 typedef struct
 {
     GtkBuilder *builder;
     gpointer user_data;
     GtkWidget *currentWindow;
-    gint showtime;
+    gchar *filename;
+    int showtime;
 } SGlobalData;
 
 int main(int argc, char *argv [])
 {
-    GtkWidget *fenetre_principale;
+    GtkWidget *main_window;
     SGlobalData data;
     GError *error = NULL;
     gchar *filename;
-    /* Initialisation de la librairie Gtk. */
-    gtk_init(&argc, &argv);
     data.showtime = 0;
 
-    /* Ouverture du fichier Glade de la fenêtre principale */
+    /* Initialize the GTK library */
+    gtk_init(&argc, &argv);
+
+    /* Open the Glade file for the main window */
     data.builder = gtk_builder_new();
 
-    /* Création du chemin complet pour accéder au fichier test.glade. */
-    /* g_build_filename(); construit le chemin complet en fonction du système */
-    /* d'exploitation. ( / pour Linux et \ pour Windows) */
+    /* Create the path to OCR.glade depending on the OS */
     filename =  g_build_filename ("OCR.glade", NULL);
 
-    /* Chargement du fichier test.glade. */
+    /* Load OCR.glade */
     gtk_builder_add_from_file (data.builder, filename, &error);
     g_free (filename);
     if (error)
@@ -38,37 +39,43 @@ int main(int argc, char *argv [])
         return code;
     }
 
+    /* Connect all the signals entered in Glade */
     gtk_builder_connect_signals(data.builder, &data);
 
-    /* Récupération du pointeur de la fenêtre principale */
-    fenetre_principale = GTK_WIDGET(gtk_builder_get_object (data.builder, "mainWindow"));
-    /*GtkWidget *quit = GTK_WIDGET(gtk_builder_get_object (data.builder, "Quit"));*/
+    /* Get the pointer to the main window */
+    main_window = GTK_WIDGET(gtk_builder_get_object (data.builder, "mainWindow"));
 
-    /* Affectation du signal "destroy" à la fonction gtk_main_quit(); pour la */
-    /* fermeture de la fenêtre. */
-    /*g_signal_connect (G_OBJECT (fenetre_principale), "destroy", (GCallback)gtk_main_quit, NULL);
-    g_signal_connect (G_OBJECT (quit), "activate", (GCallback)gtk_main_quit, NULL);*/
-
-    /* Affichage de la fenêtre principale. */
-    gtk_widget_show_all (fenetre_principale);
+    /* Show the main window */
+    gtk_widget_show_all (main_window);
 
     gtk_main();
 
     return 0;
 }
 
-void callback_close (GtkMenuItem *menuitem, gpointer user_data)
+void callback_file (GtkMenuItem *menuitem, gpointer user_data)
 {
+    /* Cast the user_data pointer to get the data */
     SGlobalData *data = (SGlobalData*) user_data;
-    //GtkWidget *fileSelector = NULL;
 
+    /* Get the FileSelector window */
     data->currentWindow = GTK_WIDGET (gtk_builder_get_object (data->builder, "FileSelector"));
     
-    /*GtkFileFilter *filter = gtk_file_filter_new();
-    gtk_file_filter_add_pattern(filter, "*.bmp");
+    /* Lock the window in wait of a response */
+    gtk_dialog_run (GTK_DIALOG (data->currentWindow));
 
-    g_object_set_property(G_OBJECT (data->currentWindow), "filter", filter);*/
+    gtk_widget_hide(data->currentWindow);
+}
 
+void callback_savefile (GtkMenuItem *menuitem, gpointer user_data)
+{
+    /* Cast the user_data pointer to get the data */
+    SGlobalData *data = (SGlobalData*) user_data;
+
+    /* Get the FileSelector window */
+    data->currentWindow = GTK_WIDGET (gtk_builder_get_object (data->builder, "FileSaver"));
+    
+    /* Lock the window in wait of a response */
     gtk_dialog_run (GTK_DIALOG (data->currentWindow));
 
     gtk_widget_hide(data->currentWindow);
@@ -85,32 +92,97 @@ void callback_image(GtkButton *open, gpointer user_data)
 {
     SGlobalData *data = (SGlobalData*) user_data;
 
+    /* Get the path to the .bmp image selected in the FileSelector */
     const gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(data->currentWindow));
+
+    data->filename = filename;
 
     GtkImage *image = GTK_IMAGE(gtk_builder_get_object(data->builder, "Image"));
 
+    /* Show the image selected in the GtkImage */
     gtk_image_set_from_file(image, filename);
+
+    GtkButton *analyze = GTK_BUTTON(gtk_builder_get_object(data->builder, "Analyze"));
+
+    gtk_button_set_label(analyze, "Analyze");
+
+    gtk_dialog_response(GTK_DIALOG(data->currentWindow), GTK_RESPONSE_CLOSE);
 }
 
-void callback_OCR(GtkButton *Analyze, gpointer user_data)
+void callback_OCR(GtkButton *analyze, gpointer user_data)
 {
-    //Do the shit
+    SGlobalData *data = (SGlobalData*) user_data;
+
+    if(data->showtime == 1)
+    {
+        printf("Dev Mode\n");
+    }
+    else
+    {
+        printf("Normal Mode\n");
+    }
+
+    GtkTextBuffer *buff = GTK_TEXT_BUFFER(gtk_builder_get_object(data->builder, "Buffer"));
+
+    //Recup results.txt
+    FILE *resultFile;
+    resultFile = fopen("./data/result.txt", "r");
+    char lolresult = 0;
+    char *resultChar = &lolresult;
+    fscanf(resultFile, "%s", resultChar);
+    fclose(resultFile);
+    const gchar *result = (const gchar *)resultChar;
+
+    gtk_text_buffer_set_text(buff, result, -1);
+
+    gtk_button_set_label(analyze, "Done !");
 }
 
 void callback_about(GtkMenuItem *menuitem, gpointer user_data)
 {
-    SGlobalData *data = (SGlobalData*) user_data;    
+    SGlobalData *data = (SGlobalData*) user_data; 
     
     GtkWidget *about = GTK_WIDGET(gtk_builder_get_object (data->builder, "About"));
+
+    gtk_widget_show(about);
 
     gtk_dialog_run(GTK_DIALOG(about));
 
     gtk_widget_hide(about);
 }
 
-void callback_su (GtkEntry *version, gpointer user_data)
+void callback_su (GtkSwitch *version, gpointer user_data)
 {
-    const gchar *versionNb = gtk_entry_get_text(version);
-    printf("Je suis passé\n");
-    printf("%s\n", versionNb);
+    SGlobalData *data = (SGlobalData*) user_data;
+
+    data->showtime = !(data->showtime);
+}
+
+void callback_save(GtkButton *save, gpointer user_data)
+{
+    SGlobalData *data = (SGlobalData*) user_data;
+
+    GtkEntry *entry = GTK_ENTRY(gtk_builder_get_object (data->builder, "SaveEntry"));
+
+    GtkFileChooser *file = GTK_FILE_CHOOSER(gtk_builder_get_object (data->builder, "FileSaver"));
+
+    gchar *path = gtk_file_chooser_get_current_folder(file);
+
+    const gchar *name = gtk_entry_get_text(entry);
+
+    //copy result with new name
+    char *pathChar = (char *)path;
+    char *nameChar = (char *)name;
+    if (nameChar == NULL)
+        nameChar = "result";
+    char fullPath[200];
+    strcpy(fullPath, pathChar);
+    strcat(fullPath, "/");
+    strcat(fullPath, nameChar);
+    strcat(fullPath, ".txt");
+    char fullFullPath[236];
+    sprintf(fullFullPath, "cp data/result.txt %s", fullPath);
+    system(fullFullPath);
+
+    gtk_dialog_response(GTK_DIALOG(data->currentWindow), GTK_RESPONSE_CLOSE);
 }
