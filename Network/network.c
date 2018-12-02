@@ -13,6 +13,26 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+char compute(double matrix[]) {
+
+    Network *net;
+
+    // Load
+    for (size_t i = 0; i < 100; i++) {
+        net->computed[i] = matrix[i];
+    }
+
+    forwardPropagation(net);
+
+    size_t max = 0, pos = net->count_nr[0] + net->count_nr[1];
+
+    for (size_t i = 1; i < 36; i++) {
+        max = net->computed[pos + i] > net->computed[pos + max] ? i : max;
+    }
+
+    return "abcdefghijklmnopqrstuvwxyz0123456789"[max];
+}
+
 int main(){
 
     //////////////////////////////////
