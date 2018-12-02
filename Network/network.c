@@ -246,8 +246,11 @@ void backPropagation(Network *net, double expectedResults[], size_t resStart, do
     // }
 
     for (size_t i = 0; i < net->count_nr[2]; i++) {
-        net->global_error += 0.5 * ((expectedResults[resStart + i]) - (net->computed[net->count_nr[0] + net->count_nr[1] + i]));
-        net->outputErrors[i] = ((expectedResults[resStart + i]) - (net->computed[net->count_nr[0] + net->count_nr[1] + i])) * (net->computed[net->count_nr[0] + net->count_nr[1] + i]) * (1.0 - (net->computed[net->count_nr[0] + net->count_nr[1] + i]));
+        double target = expectedResults[resStart + i];
+        double output = net->computed[net->count_nr[0] + net->count_nr[1] + i];
+    
+        net->global_error += 0.5 * (target - output) * (target - output);
+        net->outputErrors[i] = (target - output) * transferDeriv(output);
     }
 
     for (size_t i = 0; i < net->count_nr[1]; i++) {
