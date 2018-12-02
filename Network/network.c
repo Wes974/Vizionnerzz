@@ -83,7 +83,7 @@ int main(){
         
         }
     
-        for (size_t testIndex = 0; testIndex < out; testIndex++) {
+        for (size_t testIndex = 26; testIndex < 36; testIndex++) {
     
             for (size_t i = 0; i < net->count_nr[0]; i++)
                 net->computed[i] = trainingSet[testIndex * net->count_nr[0] +i];
@@ -106,7 +106,7 @@ int main(){
     printArr(net->computed, net->count_nr[2] + net->count_nr[1] \
                             + net->count_nr[0], "computed Before");
 
-    for (size_t i = 0; i < 2; i++) {
+    for (size_t i = 26; i < 36; i++) {
         testNetwork(net, trainingSet + i * in, expectedResults \
                                     + (i * 36), expectedChar, 1);
     }
