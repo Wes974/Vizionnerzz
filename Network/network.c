@@ -154,23 +154,25 @@ void initNetwork(Network *net, unsigned int *count_nr) {
     net->count_weight[1] = count_nr[0];
     net->count_weight[2] = count_nr[1];
 
-    int nbIn2Hid = net->count_nr[0] * net->count_weight[0] + net->count_nr[1] * net->count_weight[1];
-    int nbHid2Out = net->count_nr[1] * net->count_weight[1] + net->count_nr[2] * net->count_weight[2];
-
-    double deltaWeightIn2Hid[nbIn2Hid];
-    double deltaWeightHid2Out[nbHid2Out];
-
     double deltaBias[count_nr[0] + count_nr[1] + count_nr[2]];
 
     for (size_t i = 0; i < count_nr[0] + count_nr[1] + count_nr[2]; i++) {
         deltaBias[i] = 0.0;
     }
 
-    for (size_t i = 0; i < nbIn2Hid; i++) {
+    net->deltaBias = deltaBias;
+
+    int nbIn2Hid = count_nr[0] * net->count_weight[0] + count_nr[1] * net->count_weight[1];
+    int nbHid2Out = count_nr[1] * net->count_weight[1] + count_nr[2] * net->count_weight[2];
+
+    double deltaWeightIn2Hid[nbIn2Hid];
+    double deltaWeightHid2Out[nbHid2Out];
+
+    for (int i = 0; i < nbIn2Hid; i++) {
         deltaWeightIn2Hid[i] = 0.0;
     }
 
-    for (size_t i = 0; i < nbHid2Out; i++) {
+    for (int i = 0; i < nbHid2Out; i++) {
         deltaWeightHid2Out[i] = 0.0;
     }
 
@@ -179,33 +181,16 @@ void initNetwork(Network *net, unsigned int *count_nr) {
 
     net->global_error = 1.0;
 
-    for (size_t i = 0; i < count_nr[1] *(count_nr[0] + count_nr[2]) + count_nr[0]; i++)
-    {
-        // double r = (double)rand() / (double)(RAND_MAX / 10);
-        // double r = fmod((double) rand() / (double)RAND_MAX, 3) + (-1);
-        // double r = (double)rand() / (double)RAND_MAX;        
-        // int r = rand() % 2;
+    double initWeights = 0.5;
 
-        double r = (double)(rand() % 100);
+    int nbWeights = count_nr[0] * net->count_weight[0] + count_nr[1] * net->count_weight[1] + count_nr[2] * net->count_weight[2];
 
-        double neg_rand = 1;
-        if (rand() % 2)
-            neg_rand = -1;
-
-        net->weights[i] = (r * neg_rand / 100.0); // == 0 ? 1 : -1;
+    for (int i = 0; i < nbWeights; i++) {
+        net->weights[i] = 2.0 * ((((double)rand()/((double)RAND_MAX+1))) - 0.5) * initWeights;
     }
-    for (size_t i = 0; i < count_nr[0] + count_nr[1] + count_nr[2]; i++) {
-        // double r = (double)rand() / (double)(RAND_MAX / 10);
-        // double r = fmod((double)rand() / (double)RAND_MAX, 3) + (-1);
-        // double r = (double)rand() / (double)RAND_MAX;
-        
-        double r = (double)(rand() % 100);
 
-        double neg_rand = 1;
-        if (rand() % 2)
-            neg_rand = -1;
-        
-        net->bias[i] = (r * neg_rand / 100.0);
+    for (size_t i = 0; i < count_nr[0] + count_nr[1] + count_nr[2]; i++) {
+        net->bias[i] = 2.0 * ((((double)rand()/((double)RAND_MAX+1))) - 0.5) * initWeights;
     }
 }
 
@@ -221,27 +206,22 @@ void forwardPropagation(Network *net) {
     }
 
     // Hidden Layer
-    
     for (size_t i = 0; i < net->count_nr[1]; i++) {
-        double sum = 0.0;
-        for (size_t j = 0; j < net->count_weight[1]; j++) {
+        double sum = net->bias[net->count_nr[0] + i];
+        for (size_t j = 0; j < net->count_nr[0]; j++) {
             sum += net->computed[j] * net->weights[net->count_nr[0] * net->count_weight[0] + i * net->count_weight[1] + j];
         }
-        net->computed[net->count_nr[0] + i] = sigmoid(sum + net->bias[net->count_nr[0] + i]);
+        net->computed[net->count_nr[0] + i] = sigmoid(sum);
     }
 
     // Output Layer
-    
     for (size_t i = 0; i < net->count_nr[2]; i++) {
-        double sum = 0.0;
-        for (size_t j = 0; j < net->count_weight[2]; j++) {
+        double sum = net->bias[net->count_nr[0] + net->count_nr[1] + i];
+        for (size_t j = 0; j < net->count_weight[1]; j++) {
             sum += net->computed[net->count_nr[0] + j] * net->weights[net->count_nr[0] * net->count_weight[0] + net->count_nr[1] * net->count_weight[1] + i * net->count_weight[2] + j];
         }
-        // net->computed[net->count_nr[0] + net->count_nr[1] + i] = sum + net->bias[net->count_nr[0] + net->count_nr[1] + i];
-        net->computed[net->count_nr[0] + net->count_nr[1] + i] = sigmoid(sum + net->bias[net->count_nr[0] + net->count_nr[1] + i]);        
+        net->computed[net->count_nr[0] + net->count_nr[1] + i] = sigmoid(sum);        
     }
-
-    // softmax(net);
 
 }
     //////////////////////////////////
@@ -252,16 +232,22 @@ void backPropagation(Network *net, double expectedResults[], size_t resStart, do
 
     double alpha = 0.9;
     
-    // Delta Output
+    // for (size_t i = 0; i < net->count_nr[2]; i++) {
+    //     double e = 0.0;
+    //     // printf("count_nr[2] = %lu\n", net->count_nr[2]);
+    //     for (size_t j = 0; j < 1; j++)
+    //     {
+    //         double target = expectedResults[resStart + i];
+    //         double output = net->computed[net->count_nr[0] + net->count_nr[1] + i];
+    //         e += (target - output) * transferDeriv(output);
+    //         net->global_error += 0.5 * (target - output) * (target - output);
+    //     }
+    //     net->outputErrors[i] = e;   // Delta Output
+    // }
+
     for (size_t i = 0; i < net->count_nr[2]; i++) {
-        double e = 0.0;
-        for (size_t j = 0; j < net->count_nr[2]; j++) {
-            double target = expectedResults[resStart + i];
-            double output = net->computed[net->count_nr[0] + net->count_nr[1] + i];
-            e += (target - output) * transferDeriv(output);
-            net->global_error += 0.5 * (target - output) * (target - output);
-        }
-        net->outputErrors[i] = e;
+        net->global_error += 0.5 * ((expectedResults[resStart + i]) - (net->computed[net->count_nr[0] + net->count_nr[1] + i]));
+        net->outputErrors[i] = ((expectedResults[resStart + i]) - (net->computed[net->count_nr[0] + net->count_nr[1] + i])) * (net->computed[net->count_nr[0] + net->count_nr[1] + i]) * (1.0 - (net->computed[net->count_nr[0] + net->count_nr[1] + i]));
     }
 
     for (size_t i = 0; i < net->count_nr[1]; i++) {
@@ -272,25 +258,29 @@ void backPropagation(Network *net, double expectedResults[], size_t resStart, do
             e += net->weights[net->count_nr[0] * net->count_weight[0] + net->count_nr[1] * net->count_weight[1] + i * net->count_nr[2] + j] * net->outputErrors[j];
         }
 
-        double delta = e * transferDeriv(net->computed[net->count_nr[0] + i]);
+        double deltaHidden = e * transferDeriv(net->computed[net->count_nr[0] + i]);
 
-        net->deltaBias[net->count_nr[0] + i] = trainingStep * delta + alpha * net->deltaBias[net->count_nr[0] + i];
-        net->bias[net->count_nr[0] * net->count_weight[0]] += net->deltaBias[i];
+        int pos = net->count_nr[0] + i;
 
+        net->deltaBias[pos] = trainingStep * deltaHidden + alpha * net->deltaBias[pos];
+        net->bias[pos] += net->deltaBias[pos];
+        
         for (size_t j = 0; j < net->count_nr[0]; j++) {
-            net->deltaWeightIn2Hid[i] = trainingStep * net->computed[i] * delta + alpha * net->deltaWeightIn2Hid[i];
-            net->weights[net->count_nr[0] * net->count_weight[0] + i * net->count_nr[1] + j] += net->deltaWeightIn2Hid[i];
+            net->deltaWeightIn2Hid[i] = trainingStep * net->computed[i] * deltaHidden + alpha * net->deltaWeightIn2Hid[i];
+            net->weights[net->count_nr[0] * net->count_weight[0] + i * net->count_weight[1] + j] += net->deltaWeightIn2Hid[i];
         }
     }
 
     for (size_t i = 0; i < net->count_nr[2]; i++) {
 
-        net->deltaBias[net->count_nr[0] + net->count_nr[1] + i] = trainingStep * net->outputErrors[i] + alpha * net->deltaBias[net->count_nr[0] + net->count_nr[1] + i];
-        net->bias[net->count_nr[0] + net->count_nr[1] + i] += net->deltaBias[net->count_nr[0] + net->count_nr[1] + i];
+        int pos = net->count_nr[0] + net->count_nr[1] + i;
+
+        net->deltaBias[pos] = trainingStep * net->outputErrors[i] + alpha * net->deltaBias[pos];
+        net->bias[pos] += net->deltaBias[pos];
 
         for (size_t j = 0; j < net->count_nr[1]; j++) {
             net->deltaWeightHid2Out[j] = trainingStep * net->computed[net->count_nr[0] + j] * net->outputErrors[i] + alpha * net->deltaWeightHid2Out[j];
-            net->weights[net->count_nr[0] * net->count_weight[0] + net->count_nr[1] * net->count_weight[1] + i * net->count_nr[2] + j] += net->deltaWeightHid2Out[i];
+            net->weights[net->count_nr[0] * net->count_weight[0] + net->count_nr[1] * net->count_weight[1] + i * net->count_weight[2] + j] += net->deltaWeightHid2Out[i];
         }
     }
 
