@@ -115,7 +115,7 @@ void OCR(char *path, unsigned int superUser)
 
                 //NETWORK
                 //char letter = network(...);
-                //fputc(letter, result);
+                fputc(97, result);
 
                 
             }

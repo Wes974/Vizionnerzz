@@ -1,7 +1,9 @@
+#define _GNU_SOURCE
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include "OCR.h"
 #include "Basics.h"
+#include <stdlib.h>
 
 /* Struct used to keep global variables */
 typedef struct
@@ -56,6 +58,7 @@ int main(int argc, char *argv [])
     return 0;
 }
 
+//Open the file selector
 void callback_file (GtkMenuItem *menuitem, gpointer user_data)
 {
     /* Cast the user_data pointer to get the data */
@@ -72,6 +75,7 @@ void callback_file (GtkMenuItem *menuitem, gpointer user_data)
     gtk_widget_hide(data->currentWindow);
 }
 
+//Open the save window
 void callback_savefile (GtkMenuItem *menuitem, gpointer user_data)
 {
     /* Cast the user_data pointer to get the data */
@@ -88,6 +92,7 @@ void callback_savefile (GtkMenuItem *menuitem, gpointer user_data)
     gtk_widget_hide(data->currentWindow);
 }
 
+//Close the window
 void callback_cancel (GtkButton *cancel, gpointer user_data)
 {
     SGlobalData *data = (SGlobalData*) user_data;
@@ -97,7 +102,7 @@ void callback_cancel (GtkButton *cancel, gpointer user_data)
     gtk_dialog_response(GTK_DIALOG(data->currentWindow), GTK_RESPONSE_CLOSE);
 }
 
-
+//Load the image into the GtkImage and save the path
 void callback_image(GtkButton *open, gpointer user_data)
 {
     SGlobalData *data = (SGlobalData*) user_data;
@@ -121,28 +126,49 @@ void callback_image(GtkButton *open, gpointer user_data)
     gtk_dialog_response(GTK_DIALOG(data->currentWindow), GTK_RESPONSE_CLOSE);
 }
 
+//Calls the OCR function and print it into the Text View
 void callback_OCR(GtkButton *analyze, gpointer user_data)
 {
     SGlobalData *data = (SGlobalData*) user_data;
  
-    OCR(data->filename, data->showtime);
+    OCR((char*)data->filename, data->showtime);
 
     GtkTextBuffer *buff = GTK_TEXT_BUFFER(gtk_builder_get_object(data->builder, "Buffer"));
 
     //Recup results.txt
     FILE *resultFile;
     resultFile = fopen("./data/result.txt", "r");
-    char lolresult = 0;
-    char *resultChar = &lolresult;
-    fscanf(resultFile, "%s", resultChar);
+    //char resultCharlol = '0';
+    //char *resultChar = &resultCharlol;
+    char resultChar[200];
+    ssize_t read;
+    char *line = NULL;
+    //char *temp = resultChar;
+    ssize_t len = 0;
+    unsigned int i = 0;
+    
+    //gtk_text_buffer_set_text(buff, "", -1);
+    
+    while ((read = getline(&line, &len, resultFile)) != -1){
+        //resultChar = temp;
+        //i = 0;
+        while (*line != 0){
+            resultChar[i] = *line;
+            line++;
+            //resultChar++;
+            i++;
+        }
+    }
+
     fclose(resultFile);
-    const gchar *result = (const gchar *)resultChar;
+    const gchar *result = g_utf8_make_valid((const gchar *)resultChar, -1);
 
     gtk_text_buffer_set_text(buff, result, -1);
 
     gtk_button_set_label(analyze, "Done !");
 }
 
+//Open the About window
 void callback_about(GtkMenuItem *menuitem, gpointer user_data)
 {
     SGlobalData *data = (SGlobalData*) user_data; 
@@ -158,6 +184,7 @@ void callback_about(GtkMenuItem *menuitem, gpointer user_data)
     gtk_widget_hide(about);
 }
 
+//Activate the superUsetr Mode
 void callback_su (GtkMenuItem *version, gpointer user_data)
 {
     SGlobalData *data = (SGlobalData*) user_data;
@@ -165,13 +192,9 @@ void callback_su (GtkMenuItem *version, gpointer user_data)
     data->nul = gtk_menu_item_get_label(version);
 
     data->showtime = !(data->showtime);
-
-    /*if(data->showtime == 1)
-        printf("Dev Mode");
-    else
-        printf("Normal Mode");*/
 }
 
+//Save the results of the OCR in the directory selected
 void callback_save(GtkButton *save, gpointer user_data)
 {
     SGlobalData *data = (SGlobalData*) user_data;
