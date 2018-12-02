@@ -5,8 +5,15 @@
 
 # ifndef NETWORK_H
 # define NETWORK_H
-#include <stddef.h>
+#define _GNU_SOURCE
+#include "network.h"
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
 #include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 // Structure for the Neural Network
 typedef struct Network Network;
@@ -21,6 +28,8 @@ struct Network {
     unsigned int *count_weight;   // Weights count by neuron by layer array
  
 };
+
+char compute(double matrix[]);
 
 void forwardPropagation(Network  *net);
 void backPropagation(Network *net, double expectedResults[], size_t resStart, \
@@ -38,8 +47,10 @@ double sigmoid(double z);
 double transferDeriv(double x);
 void softmax(Network *net);
 void printArr(double arr[], size_t count, char name[]);
-int testNetwork(Network *net, double *input, double *expectedResult, \
-                                                    char *charList, int print);
-void saveNetwork(Network *net) ;
+int testNetwork(Network *net, double *input, double *expectedResult, char *charList, int print);
+void saveNetwork(Network *net);
+void loadNetwork (Network *network);
+void saveInt(FILE *file, unsigned int number);
+void saveFloat(FILE *file, double number);
 
 #endif

@@ -55,8 +55,9 @@ int main(){
     double trainingSet[100 * 36];
     for (size_t i = 0; i < out; i++) {
         char *l = NULL;
-        size_t size;
-        getline(&l, &size, f);
+        ssize_t size;
+        ssize_t np = getline(&l, &size, f);
+        np++;
         if (i == 0)
             printf("%s\n", l);
         expectedChar[i] = *l;
@@ -376,3 +377,31 @@ void saveNetwork(Network *net) {
 }
 
 // Load
+void loadNetwork (Network *network){
+    FILE *loadFile;
+    loadFile = fopen("./save.txt", "r");
+
+    for (size_t i = 0; i < 3; i++){
+        char *line = NULL;
+        ssize_t len = 0;
+        ssize_t np = getline(&line, &len, loadFile);
+        np++;
+        sscanf(line, "%d", &network->count_nr[i]);
+    }
+
+    for (size_t i = 0; i < network->count_nr[1] + network->count_nr[2]; i++){
+        char *line = NULL;
+        ssize_t len = 0;
+        ssize_t np = getline(&line, &len, loadFile);
+        np++;
+        sscanf(line, "%le", &network->bias[i]);
+    }
+
+    for (size_t i = 0; i < network->count_nr[1] * (network->count_nr[0] + network->count_nr[2]); i++){
+        char *line = NULL;
+        ssize_t len = 0;
+        ssize_t np = getline(&line, &len, loadFile);
+        np++;
+        sscanf(line, "%le", &network->weights[i]);
+    }
+}
