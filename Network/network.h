@@ -18,6 +18,14 @@ struct Network {
     unsigned int *count_nr;       // Neuron count by layer array
     unsigned int *count_weight;   // Weights count by neuron by layer array
 
+    double *outputErrors;
+    double *hiddenErrors;
+
+    double *deltaWeightIn2Hid;
+    double *deltaWeightHid2Out;
+
+    double global_error;
+
     int *inputs;
 };
 

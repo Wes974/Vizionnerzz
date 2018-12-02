@@ -41,6 +41,10 @@ int main(){
         printf(", %i", count_nr[i]);
     printf("]\n");
 
+    printf("%s: [%i","count_weight", net->count_weight[0]);
+    for (size_t i = 1; i < 3; i++)
+        printf(", %i", net->count_weight[i]);
+    printf("]\n");
 
 
     //////////////////////////////////
@@ -78,9 +82,9 @@ int main(){
     //backPropagation(net, expectedResults, 1, .1);
 
     //return 0;
-    
-    size_t iter = 10000000;
-    
+
+    size_t iter = 1000000;  //10000000;
+
     struct timespec t0, t1;
     clock_gettime(CLOCK_MONOTONIC, &t0);
     printf("Training %lu times with %f training step\n", iter, trainingStep);
@@ -89,121 +93,113 @@ int main(){
 
         // trainingStep -= 0.0000001;
 
+        if (net->global_error < 0.001)
+            break;
+
         if (i % (iter / 10) == 0) {
             
             clock_gettime(CLOCK_MONOTONIC, &t1);
             printf("[%2g/10]: \t%f s\n", (double) i / (iter / 10), time_gdiff(t0, t1));
             clock_gettime(CLOCK_MONOTONIC, &t0);
 
-            printf("training step = %f\n", trainingStep);
-            /*
-            printf("Weights : ");
-
-            for (size_t i = 0; i < net->count_weight[0] * net->count_nr[0] + net->count_weight[1] * net->count_nr[1] + net->count_weight[2] * net->count_nr[2]; i++)
-            {
-                printf("W[%lu] = %f  ", i, net->weights[i]);
-            }
-
-            printf("\nBias : ");
-
-            for (size_t i = 0; i < net->count_nr[0] + net->count_nr[1] + net->count_nr[2]; i++)
-            {
-                printf("B[%lu] = %f  ", i, net->bias[i]);
-            }
-
-            printf("\nComputed : ");
-
-            for (size_t i = 0; i < net->count_nr[0] + net->count_nr[1] + net->count_nr[2]; i++) {
-                printf("C[%lu] = %f  ", i, net->computed[i]);
-            }
-
-            printf("\n");
-            */
-            // printf("[%2g/10]\n",(double) i / (iter / 10));
         }
-        //printf("Iter %lu: ", i);
+        
         for (size_t testIndex = 0; testIndex < testMaxCount; testIndex++) {
-            //printf("%lu ", testIndex + 1);
-            // net->computed[0] = trainingSet[2 * testIndex];
-            // net->computed[1] = trainingSet[2 * testIndex + 1];
-
             net->inputs = (trainingSet + testIndex * net->count_nr[0]);
 
-            // for (size_t i = 0; i < 5; i++)
-            //     printf("computed[%lu] = %f  ", i, net->computed[i]);
-
-            // printf("\t i = %lu\n", i);
+            net->global_error = 0.0;
 
             forwardPropagation(net);
             backPropagation(net, expectedResults, testIndex * net->count_nr[2], trainingStep);
         }
-        //printf("\n");
-
+        
     }
     clock_gettime(CLOCK_MONOTONIC, &t1);
     printf("[10/10]: \t%f s\n", time_gdiff(t0, t1));
-
 
     //////////////////////////////////
     ////////// FINAL TESTS ///////////
     //////////////////////////////////
 
-    net->computed[0] = 0;
-    net->computed[1] = 0;
-    forwardPropagation(net);
-    // printf("(0, 0) = %f\n", net->computed[4]);
-    printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(0, 0)");
+    for (size_t testIndex = 0; testIndex < 4; testIndex++) {
 
-    net->computed[0] = 0;
-    net->computed[1] = 1;
-    forwardPropagation(net);
-    // printf("(0, 1) = %f\n", net->computed[4]);
-    printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(0, 1)");
+        net->inputs = (trainingSet + testIndex * net->count_nr[0]);
 
-    net->computed[0] = 1;
-    net->computed[1] = 0;
-    forwardPropagation(net);
-    // printf("(1, 0) = %f\n", net->computed[4]);
-    printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(1, 0)");
-
-    net->computed[0] = 1;
-    net->computed[1] = 1;
-    forwardPropagation(net);
-    // printf("(1, 1) = %f\n", net->computed[4]);
-    printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "(1, 1)");
-
+        forwardPropagation(net);
+        printf("(%i, %i)", trainingSet[testIndex * 2], trainingSet[testIndex * 2 + 1]);
+        printArr(net->computed, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "");
+    }
+    
     printArr(net->weights, net->count_nr[1] * (net->count_nr[0] + net->count_nr[2]) + net->count_nr[0], "weights");
-    printArr(net->bias, net->count_nr[0] + net->count_nr[1] + net->count_nr[2], "bias");
+    printArr(net->bias, 2, "bias");
+
+    printf("Global Error = %f\n", net->global_error);
 
     return 0;
 }
 
 
 void initNetwork(Network *net, unsigned int *count_nr) {
+    
     net->computed = calloc(count_nr[0] + count_nr[1] + count_nr[2], sizeof(double));
     net->count_nr = count_nr;
     net->weights = calloc(count_nr[1] *(count_nr[0] + count_nr[2]) + count_nr[0], sizeof(double));
-    net->bias = calloc(count_nr[0] + count_nr[1] + count_nr[2], sizeof(double));
+    net->bias = calloc(2, sizeof(double)); // calloc(count_nr[0] + count_nr[1] + count_nr[2], sizeof(double));
     net->count_weight = calloc(3, sizeof(unsigned int));
+
+    net->outputErrors = calloc(count_nr[2], sizeof(double));
+    net->hiddenErrors = calloc(count_nr[1], sizeof(double));
 
     net->count_weight[0] = 1;
     net->count_weight[1] = count_nr[0];
     net->count_weight[2] = count_nr[1];
 
+    int nbIn2Hid = net->count_nr[0] * net->count_weight[0] + net->count_nr[1] * net->count_weight[1];
+    int nbHid2Out = net->count_nr[1] * net->count_weight[1] + net->count_nr[2] * net->count_weight[2];
+
+    double deltaWeightIn2Hid[nbIn2Hid];
+    double deltaWeightHid2Out[nbHid2Out];
+
+    for (size_t i = 0; i < nbIn2Hid; i++) {
+        deltaWeightIn2Hid[i] = 0.0;
+    }
+
+    for (size_t i = 0; i < nbHid2Out; i++) {
+        deltaWeightHid2Out[i] = 0.0;
+    }
+
+    net->deltaWeightIn2Hid = deltaWeightIn2Hid;
+    net->deltaWeightHid2Out = deltaWeightHid2Out;
+
+    net->global_error = 1.0;
+
     for (size_t i = 0; i < count_nr[1] *(count_nr[0] + count_nr[2]) + count_nr[0]; i++)
     {
-        double r = (double)rand() / (double)(RAND_MAX / 10);
+        // double r = (double)rand() / (double)(RAND_MAX / 10);
         // double r = fmod((double) rand() / (double)RAND_MAX, 3) + (-1);
         // double r = (double)rand() / (double)RAND_MAX;        
         // int r = rand() % 2;
-        net->weights[i] = r; // == 0 ? 1 : -1;
+
+        double r = (double)(rand() % 100);
+
+        double neg_rand = 1;
+        if (rand() % 2)
+            neg_rand = -1;
+
+        net->weights[i] = (r * neg_rand / 100.0); // == 0 ? 1 : -1;
     }
     for (size_t i = 0; i < count_nr[0] + count_nr[1] + count_nr[2]; i++) {
-        double r = (double)rand() / (double)(RAND_MAX / 10);
+        // double r = (double)rand() / (double)(RAND_MAX / 10);
         // double r = fmod((double)rand() / (double)RAND_MAX, 3) + (-1);
         // double r = (double)rand() / (double)RAND_MAX;
-        // int r = rand() % 2;
-        net->bias[i] = r; // == 0 ? 1 : -1;
+        
+        double r = (double)(rand() % 100);
+
+        double neg_rand = 1;
+        if (rand() % 2)
+            neg_rand = -1;
+        
+        net->bias[i] = (r * neg_rand / 100.0);
     }
 }
 
@@ -212,10 +208,10 @@ void initNetwork(Network *net, unsigned int *count_nr) {
     //////////////////////////////////
 
 void forwardPropagation(Network *net) {
-
+    
     // Input Layer
     for (size_t i = 0; i < net->count_nr[0]; i++) {
-        net->computed[i] = sigmoid(net->weights[i] * net->inputs[i] + net->bias[i]);
+        net->computed[i] = net->inputs[i];
     }
 
     // Hidden Layer
@@ -236,7 +232,7 @@ void forwardPropagation(Network *net) {
             sum += net->computed[net->count_nr[0] + j] * net->weights[net->count_nr[0] * net->count_weight[0] + net->count_nr[1] * net->count_weight[1] + i * net->count_weight[2] + j];
         }
         // net->computed[net->count_nr[0] + net->count_nr[1] + i] = sum + net->bias[net->count_nr[0] + net->count_nr[1] + i];
-        net->computed[net->count_nr[0] + net->count_nr[1] + i] = sigmoid(sum + net->bias[net->count_nr[0] + net->count_nr[1] + i]);        
+        net->computed[net->count_nr[0] + net->count_nr[1] + i] = sigmoid(sum + net->bias[net->count_nr[0] + net->count_nr[1] + i]);
     }
 
     // softmax(net);
@@ -248,128 +244,45 @@ void forwardPropagation(Network *net) {
 
 void backPropagation(Network *net, double expectedResults[], size_t resStart, double trainingStep) {
 
-    // double newWeights[net->count_nr[1] * (net->count_nr[0] + net->count_nr[2]) + net->count_nr[0]];
-    // double newBias[net->count_nr[0] + net->count_nr[1] + net->count_nr[2]];
-    double outputErrors[net->count_nr[2]];
-    double hiddenErrors[net->count_nr[1]];
-    // double inputErrors[net->count_nr[0]];
-
-    // 1 - Output Layer error and Hidden layer weight change:
+    double alpha = 0.9;
     
-        // 1.1 - Output layer error
-    
+    // Delta Output
     for (size_t i = 0; i < net->count_nr[2]; i++) {
         double e = 0.0;
         for (size_t j = 0; j < net->count_nr[2]; j++) {
             double target = expectedResults[resStart + i];
             double output = net->computed[net->count_nr[0] + net->count_nr[1] + i];
-            e += -(target - output) * transferDeriv(output);
+            e += (target - output) * transferDeriv(output);
+            net->global_error += 0.5 * (target - output) * (target - output);
         }
-        outputErrors[i] = e;
+        net->outputErrors[i] = e;
     }
-    
-    // 2 - Hidden layer error and Input layer weight change:
 
-        // 2.1 - Hidden layer error
-    
     for (size_t i = 0; i < net->count_nr[1]; i++) {
+
         double e = 0.0;
+
         for (size_t j = 0; j < net->count_nr[2]; j++) {
-            e += outputErrors[j] * net->weights[net->count_nr[0] * net->count_weight[0] + net->count_nr[1] * net->count_weight[1] + i * net->count_weight[2]];
+            e += net->weights[net->count_nr[0] * net->count_weight[0] + net->count_nr[1] * net->count_weight[1] + i * net->count_nr[2] + j] * net->outputErrors[j];
         }
 
-        double outh = transferDeriv(sigmoid(net->computed[net->count_nr[0] + i]));
+        double delta = e * transferDeriv(net->computed[net->count_nr[0] + i]);
 
-        double neth = net->computed[0 + i];
+        net->deltaWeightIn2Hid[0] = trainingStep * delta + alpha * net->deltaWeightIn2Hid[0];
+        net->weights[net->count_nr[0] * net->count_weight[0]] += net->deltaWeightIn2Hid[0];
 
-        hiddenErrors[i] = e * outh * neth;
-    }
-
-        // 1.2 - Hidden layer weight update
-    
-    for (size_t i = 0; i < net->count_nr[2]; i++) {
-        for (size_t j = 0; j < net->count_nr[1]; j++) {
-            int pos = net->count_nr[0] * net->count_weight[0] + net->count_nr[1] * net->count_weight[1] + i * net->count_weight[2] + j;
-            net->weights[pos] = net->weights[pos] - trainingStep * outputErrors[i];
-        }
-    }
-
-        // 2.2 - Input layer weight update
-    
-    for (size_t i = 0; i < net->count_nr[1]; i++) {
         for (size_t j = 0; j < net->count_nr[0]; j++) {
-            int pos = net->count_nr[0] * net->count_weight[0] + net->count_weight[1] * i + j;
-            net->weights[pos] = net->weights[pos] - trainingStep * hiddenErrors[i];
+            net->deltaWeightIn2Hid[i] = trainingStep * net->computed[i] * delta + alpha * net->deltaWeightIn2Hid[i];
+            net->weights[net->count_nr[0] * net->count_weight[0] + i * net->count_nr[1] + j] += net->deltaWeightIn2Hid[i];
         }
     }
-
-    /*
-
-    // 1 - Output error
-    size_t outputPos = net->count_nr[0] + net->count_nr[1];
-    size_t outputWeightPos = net->count_nr[0] * net->count_weight[0] + net->count_nr[1] * net->count_weight[1];
-
-    
 
     for (size_t i = 0; i < net->count_nr[2]; i++) {
-        outputErrors[i] = (expectedResults[resStart + i] - net->computed[outputPos + i]) * transferDeriv(net->computed[outputPos + i]) ;
-    }
-
-    // 2 - Hidden layer errors
-
-    for (size_t i = 0; i < net->count_nr[1]; i++) {
-        double e = 0.0;
-        for (size_t j = 0; j < net->count_nr[2]; j++) {
-            e += net->weights[outputWeightPos + i + j * net->count_weight[2]] * outputErrors[j];
-        }
-        hiddenErrors[i] = e  * transferDeriv(net->computed[net->count_nr[0] + i]);
-    }
-
-    // 3 - Input layer errors
-
-    for (size_t i = 0; i < net->count_nr[0]; i++) {
-        double e = 0.0;
         for (size_t j = 0; j < net->count_nr[1]; j++) {
-            e += net->weights[net->count_nr[0] + i + j * net->count_weight[1]] * hiddenErrors[j];
+            net->deltaWeightHid2Out[j] = trainingStep * net->computed[net->count_nr[0] + j] * net->outputErrors[i] + alpha * net->deltaWeightHid2Out[j];
+            net->weights[net->count_nr[0] * net->count_weight[0] + net->count_nr[1] * net->count_weight[1] + i * net->count_nr[2] + j] += net->deltaWeightHid2Out[i];
         }
-        inputErrors[i] = e  * transferDeriv(net->computed[i]);
     }
-
-    // 4 - Output new weights
-    
-    for (size_t i = 0; i < net->count_nr[2]; i++) {
-        double w = trainingStep * outputErrors[i];
-        for (size_t j = 0; j < net->count_weight[2]; j++)
-            newWeights[outputWeightPos + i * net->count_weight[2] + j] = w * net->computed[net->count_nr[0] + j];
-        newBias[net->count_nr[0] + net->count_nr[1] + i] = w;
-    }
-
-    // 5 - Hidden new weights
-
-    for (size_t i = 0; i < net->count_nr[1]; i++) {
-        double w = trainingStep * hiddenErrors[i];
-        for (size_t j = 0; j < net->count_weight[1]; j++)
-            newWeights[net->count_nr[0] * net->count_weight[0] + net->count_weight[1] * i + j] = w * net->computed[j];
-        newBias[net->count_nr[0] + i] = w;
-    }
-
-    // 6 - Input new weights
-
-    for (size_t i = 0; i < net->count_nr[0]; i++) {
-        double w = trainingStep * inputErrors[i];
-        for (size_t j = 0; j < net->count_weight[0]; j++)
-            newWeights[net->count_weight[0] * i + j] = w * net->inputs[j];
-        newBias[i] = w;
-    }
-
-    for (size_t i = 0; i < sizeof(newWeights) / sizeof(double); i++) {
-        net->weights[i] = net->weights[i] + newWeights[i];
-    }
-    for (size_t i = 0; i < sizeof(newBias) / sizeof(double); i++) {
-        net->bias[i] = (net->bias[i] + newBias[i]);
-    }
-
-    */
 
 }
 
