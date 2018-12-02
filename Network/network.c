@@ -115,6 +115,8 @@ int main(){
     printArr(net->weights, net->count_nr[1] * (net->count_nr[0] \
                                     + net->count_nr[2]), "weights");
     printArr(net->bias, net->count_nr[1] + net->count_nr[2], "bias");
+
+    saveNetwork(net);
     
     return 0;
 }
@@ -160,7 +162,7 @@ void forwardPropagation(Network *net) {
         for (size_t j = 0; j < net->count_weight[0]; j++) {
             sum += net->computed[j] * net->weights[i *net->count_weight[0] + j];
         }
-        double temp = sum;
+        double temp = sum / net->count_nr[1] * 2;
         net->computed[net->count_nr[0] + i] = 1.0/(1.0 + exp(-temp));
     }
     
@@ -173,8 +175,10 @@ void forwardPropagation(Network *net) {
             * net->weights[net->count_weight[0] * net->count_nr[1] \
             + i * net->count_weight[1] + j];
         }
+        sum /= net->count_nr[2] / 2;
         net->computed[net->count_nr[0] + net->count_nr[1] + i] = \
-                                                    1.0 / (1.0 + exp(-sum));
+        1.0 / (1.0 + exp(-sum));
+        
     }
 
 }
@@ -291,3 +295,64 @@ int testNetwork(Network *net, double *input, double *expectedResult, \
     printf("expected: %c, result: %c\n", charList[e], charList[r]);
     return charList[e] == charList[r];
 }
+
+// Save
+
+void saveInt(FILE *file, unsigned int number){
+    unsigned int temp = number;
+    unsigned int nb = 0;
+    while (temp > 0){
+        temp /=10;
+        nb++;
+    }
+    temp = number;
+    while(nb > 1){
+        fputc(temp / (unsigned int) powl(10, nb - 1) + 48, file);
+        temp %= (unsigned int) powl(10, nb - 1);
+        nb--;
+    }
+    fputc(temp % 10 + 48, file);
+}
+
+void saveFloat(FILE *file, double number){
+    //NEG
+    if (number < 0){
+        fprintf(file, "-");
+        number = -number;
+    }
+
+    unsigned int ipart = (unsigned int)number;
+    double fpart = number - (double)ipart;
+
+    saveInt(file, ipart);
+    fprintf(file, ".");
+
+    //FLOAT
+    unsigned int afterpoint = 6;
+    if (afterpoint != 0){
+        fpart = fpart * powl(10, afterpoint);
+        saveInt(file, (unsigned int)fpart);
+    }
+}
+
+void saveNetwork(Network *net) {
+    FILE *saveFile;
+    saveFile = fopen("./save.txt", "w");
+
+    for (size_t i = 0; i < 3; i++){
+        saveInt(saveFile, net->count_nr[i]);
+        fprintf(saveFile, "\n");
+    }
+
+    for (size_t i = 0; i < net->count_nr[1] + net->count_nr[2]; i++){
+        saveFloat(saveFile, net->bias[i]);
+        fprintf(saveFile, "\n");
+    }
+
+    for (size_t i = 0; i < net->count_nr[1] * (net->count_nr[0] + net->count_nr[2]); i++){
+        saveFloat(saveFile, net->weights[i]);
+        fprintf(saveFile, "\n");
+    }
+}
+
+// Load
